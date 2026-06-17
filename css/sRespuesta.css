@@ -1,0 +1,206 @@
+/* ── Tokens (heredados de sAsk.css) ─── */
+:root {
+    --cielo:    #8ECAE6;
+    --azul:     #219EBC;
+    --marino:   #023047;
+    --amarillo: #FFB703;
+    --naranja:  #FB8500;
+    --marino-2: #034a6e;
+    --bg:       #f0f7fa;
+    --border:   #d0e8f2;
+    --text:     #023047;
+    --muted:    #5a8ca0;
+}
+
+body { background: var(--bg); font-family: 'Poppins', sans-serif; }
+
+/* ── Wrapper ── */
+.resp-wrapper {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 2rem 1rem 4rem;
+}
+
+/* ── Pregunta original ── */
+.pregunta-original { border-left: 4px solid var(--azul) !important; }
+
+.pregunta-titulo-h1 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--marino);
+    line-height: 1.35;
+    margin-bottom: .75rem;
+}
+
+/* ── Lang tags (compartido con foro.php) ── */
+.lang-tags  { display: flex; flex-wrap: wrap; gap: 6px; }
+.lang-tag   {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    color: #fff;
+    text-transform: lowercase;
+    letter-spacing: .3px;
+}
+
+/* ── Estado badge ── */
+.estado-badge        { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: .5px; }
+.estado-abierta      { background: rgba(33,158,188,.12);  color: var(--azul);  border: 1px solid rgba(33,158,188,.3); }
+.estado-resuelta     { background: rgba(34,197,94,.1);    color: #15803d;       border: 1px solid rgba(34,197,94,.3); }
+.estado-cerrada      { background: rgba(107,114,128,.1);  color: #4b5563;       border: 1px solid rgba(107,114,128,.3); }
+
+/* ── Contenido Quill readonly ── */
+.pregunta-contenido,
+.resp-contenido {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.8;
+}
+.pregunta-contenido pre,
+.resp-contenido pre {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .75rem 1rem;
+    font-size: 13px;
+    overflow-x: auto;
+}
+.pregunta-contenido code,
+.resp-contenido code {
+    background: rgba(142,202,230,.15);
+    color: var(--marino-2);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 13px;
+}
+
+/* ── Avatares ── */
+.resp-avatar-img {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--cielo);
+    flex-shrink: 0;
+}
+.resp-avatar-initials {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--azul), var(--marino-2));
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 2px solid var(--cielo);
+}
+.resp-autor-nombre { font-size: 13px; font-weight: 700; color: var(--marino); }
+.resp-autor-tiempo { font-size: 12px; color: var(--muted); }
+
+/* ── Sección título ── */
+.resp-section-title,
+.resp-form-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--marino);
+    margin: 1.5rem 0 .75rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.resp-section-title i { color: var(--azul); }
+.resp-form-title i    { color: var(--azul); }
+
+/* ── Tarjeta de respuesta ── */
+.resp-card {
+    animation: cardIn .3s ease both;
+    margin-bottom: 14px;
+    position: relative;
+}
+@keyframes cardIn {
+    from { opacity:0; transform:translateY(8px); }
+    to   { opacity:1; transform:translateY(0); }
+}
+
+/* ── Solución aceptada ── */
+.resp-solucion {
+    border-color: #22c55e !important;
+    border-left: 4px solid #22c55e !important;
+}
+.solucion-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(34,197,94,.1);
+    color: #15803d;
+    border: 1px solid rgba(34,197,94,.35);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 12px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+
+/* ── Votos ── */
+.votos-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+.btn-voto {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background .15s, color .15s, border-color .15s;
+    padding: 0;
+}
+.btn-voto:hover         { background: var(--azul); color: #fff; border-color: var(--azul); }
+.btn-voto.activo-up     { background: var(--azul); color: #fff; border-color: var(--azul); }
+.btn-voto.activo-down   { background: var(--naranja); color: #fff; border-color: var(--naranja); }
+.votos-count {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--marino);
+    min-width: 20px;
+    text-align: center;
+}
+
+/* ── Empty state ── */
+.resp-empty {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: var(--muted);
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 1rem;
+}
+.resp-empty i { font-size: 2.5rem; color: var(--cielo); display: block; margin-bottom: .75rem; }
+.resp-empty p { font-size: 14px; margin: 0; }
+
+/* ── Login prompt ── */
+.resp-login-prompt {
+    background: rgba(142,202,230,.1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    font-size: 14px;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 1.5rem;
+}
+.resp-login-prompt a { color: var(--azul); font-weight: 600; text-decoration: none; }
+.resp-login-prompt a:hover { color: var(--marino); text-decoration: underline; }
+
+/* ── Quill editor para respuesta ── */
+#resp-editor .ql-editor { min-height: 160px; }

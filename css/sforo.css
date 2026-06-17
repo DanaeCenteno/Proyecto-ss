@@ -1,0 +1,516 @@
+   :root {
+       --cielo: #8ECAE6;
+       --azul: #219EBC;
+       --marino: #023047;
+       --amarillo: #FFB703;
+       --naranja: #FB8500;
+       --marino-2: #034a6e;
+       --bg: #f0f7fa;
+       --border: #d0e8f2;
+       --text: #023047;
+       --muted: #5a8ca0;
+   }
+
+   body {
+       background: var(--bg);
+       font-family: 'Poppins', sans-serif;
+       color: var(--text);
+   }
+
+
+   /* ── Navbar ── */
+   #prin {
+       position: sticky;
+       top: 0;
+       z-index: 100;
+       /* background: rgba(255, 255, 255, .92); */
+       backdrop-filter: blur(12px);
+
+       border-bottom: 1px solid #e5e7eb;
+
+   }
+
+   /* ── Hero ── */
+   #principal {
+       background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 60%, #3b3b5c 100%);
+   }
+
+
+   /* ── Buscador ── */
+   #courseSearch {
+       border-radius: 10px;
+       border: 1.5px solid #e5e7eb;
+       padding: 8px 14px;
+       font-size: 13px;
+       width: 220px;
+       transition: border-color .2s;
+   }
+
+   #courseSearch:focus {
+       border-color: #8ECAE6;
+       outline: none;
+       box-shadow: 0 0 0 3px rgba(99, 102, 241, .12);
+   }
+
+   /* ══ FOOTER ═════════════════════════════════════*/
+   footer {
+       background: var(--marino);
+       border-top: 3px solid var(--amarillo);
+       padding: 32px 2rem;
+   }
+
+   #div-footer {
+       max-width: 1200px;
+       margin: 0 auto;
+       display: flex;
+       justify-content: space-between;
+       align-items: center;
+       flex-wrap: wrap;
+       gap: 12px;
+   }
+
+   #div-footer span {
+       font-size: 13px;
+       color: rgba(255, 255, 255, .4);
+   }
+
+
+   /* Avatar con foto de perfil */
+   .user-avatar-img {
+       width: 38px;
+       height: 38px;
+       border-radius: 50%;
+       object-fit: cover;
+       border: 2px solid rgba(255, 255, 255, 0.2);
+       transition: all 0.2s ease;
+   }
+
+   .user-avatar-img:hover {
+       border-color: rgba(255, 255, 255, 0.5);
+       transform: scale(1.05);
+   }
+
+   /* Avatar con iniciales (ya existente, asegúrate que esté) */
+   .user-avatar {
+       width: 38px;
+       height: 38px;
+       border-radius: 50%;
+       background: #FB8500;
+       border: 2px solid rgba(255, 255, 255, 0.2);
+       display: grid;
+       place-items: center;
+       font-size: 13px;
+       font-weight: 700;
+       color: #fff;
+       transition: all 0.2s ease;
+   }
+
+   .user-avatar:hover {
+       background: #219EBC;
+       border-color: rgba(255, 255, 255, 0.5);
+       transform: scale(1.05);
+   }
+
+   /* ── Barra de filtros ── */
+   .filtros-bar {
+       background: var(--marino);
+       border-bottom: 1px solid var(--border);
+       padding: 14px 0;
+       position: sticky;
+       top: 0;
+       z-index: 100;
+       box-shadow: 0 2px 8px rgba(2, 48, 71, .06);
+   }
+
+   .filtros-bar .form-control,
+   .filtros-bar .form-select {
+       border: 1px solid var(--border);
+       border-radius: 8px;
+       font-size: 13px;
+       color: var(--text);
+       padding: 8px 12px;
+   }
+
+   .filtros-bar .form-control:focus,
+   .filtros-bar .form-select:focus {
+       border-color: var(--azul);
+       box-shadow: 0 0 0 3px rgba(33, 158, 188, .12);
+       outline: none;
+   }
+
+   .filtros-bar .form-control::placeholder {
+       color: var(--muted);
+   }
+
+   .btn-filtrar {
+       background: var(--azul);
+       color: #fff;
+       border: none;
+       border-radius: 8px;
+       font-size: 13px;
+       font-weight: 600;
+       padding: 8px 18px;
+       cursor: pointer;
+       transition: background .15s;
+   }
+
+   .btn-filtrar:hover {
+       background: var(--marino-2);
+   }
+
+   .btn-limpiar {
+       background: transparent;
+       color: var(--muted);
+       border: 1px solid var(--border);
+       border-radius: 8px;
+       font-size: 13px;
+       padding: 8px 14px;
+       cursor: pointer;
+       text-decoration: none;
+       transition: background .15s;
+   }
+
+   .btn-limpiar:hover {
+       background: var(--bg);
+       color: var(--marino);
+   }
+
+   .total-badge {
+       font-size: 13px;
+       color: var(--muted);
+       font-weight: 500;
+   }
+
+   /* ── Cards de preguntas ── */
+   .foro-list {
+       padding: 2rem 0 4rem;
+   }
+
+   .pregunta-card {
+       background: #fff;
+       border: 1px solid var(--border);
+       border-radius: 14px;
+       padding: 1.25rem 1.5rem;
+       margin-bottom: 14px;
+       transition: box-shadow .2s, border-color .2s, transform .15s;
+       animation: cardIn .3s ease both;
+   }
+
+   .pregunta-card:hover {
+       box-shadow: 0 6px 24px rgba(2, 48, 71, .1);
+       border-color: var(--cielo);
+       transform: translateY(-2px);
+   }
+
+   @keyframes cardIn {
+       from {
+           opacity: 0;
+           transform: translateY(10px);
+       }
+
+       to {
+           opacity: 1;
+           transform: translateY(0);
+       }
+   }
+
+   /* ── Avatar del autor ── */
+   .autor-avatar-img {
+       width: 40px;
+       height: 40px;
+       border-radius: 50%;
+       object-fit: cover;
+       border: 2px solid var(--cielo);
+       flex-shrink: 0;
+   }
+
+   .autor-avatar-initials {
+       width: 40px;
+       height: 40px;
+       border-radius: 50%;
+       background: var(--marino);
+       color: #fff;
+       font-size: 14px;
+       font-weight: 700;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       flex-shrink: 0;
+       border: 2px solid var(--cielo);
+   }
+
+   /* ── Info del autor ── */
+   .autor-nombre {
+       font-size: 13px;
+       font-weight: 600;
+       color: var(--marino);
+   }
+
+   .autor-tiempo {
+       font-size: 12px;
+       color: var(--muted);
+   }
+
+   /* ── Título ── */
+   .pregunta-titulo {
+       font-size: 15px;
+       font-weight: 700;
+       color: var(--marino);
+       margin: 10px 0 10px;
+       line-height: 1.4;
+       text-decoration: none;
+       display: block;
+       transition: color .15s;
+   }
+
+   .pregunta-titulo:hover {
+       color: var(--azul);
+   }
+
+   /* ── Lang chips ── */
+   .lang-tags {
+       display: flex;
+       flex-wrap: wrap;
+       gap: 6px;
+       margin-bottom: 12px;
+   }
+
+   .lang-tag {
+       font-size: 11px;
+       font-weight: 600;
+       padding: 3px 10px;
+       border-radius: 20px;
+       color: #fff;
+       text-transform: lowercase;
+       letter-spacing: .3px;
+   }
+
+   /* ── Estado badge ── */
+   .estado-badge {
+       font-size: 11px;
+       font-weight: 700;
+       padding: 4px 10px;
+       border-radius: 20px;
+       text-transform: uppercase;
+       letter-spacing: .5px;
+   }
+
+   .estado-abierta {
+       background: rgba(33, 158, 188, .12);
+       color: var(--azul);
+       border: 1px solid rgba(33, 158, 188, .3);
+   }
+
+   .estado-resuelta {
+       background: rgba(34, 197, 94, .1);
+       color: #15803d;
+       border: 1px solid rgba(34, 197, 94, .3);
+   }
+
+   .estado-cerrada {
+       background: rgba(107, 114, 128, .1);
+       color: #4b5563;
+       border: 1px solid rgba(107, 114, 128, .3);
+   }
+
+   /* ── Stats ── */
+   .pregunta-stats {
+       display: flex;
+       align-items: center;
+       gap: 16px;
+   }
+
+   .stat-item {
+       font-size: 12px;
+       color: var(--muted);
+       display: flex;
+       align-items: center;
+       gap: 5px;
+       font-weight: 500;
+   }
+
+   .stat-item i {
+       font-size: 13px;
+   }
+
+   /* ── Botón responder ── */
+   .btn-responder {
+       background: var(--azul);
+       color: #fff;
+       border: none;
+       border-radius: 8px;
+       font-size: 13px;
+       font-weight: 600;
+       padding: 8px 18px;
+       text-decoration: none;
+       display: inline-flex;
+       align-items: center;
+       gap: 6px;
+       transition: background .15s, transform .15s;
+       white-space: nowrap;
+   }
+
+   .btn-responder:hover {
+       background: var(--marino-2);
+       color: #fff;
+       transform: translateY(-1px);
+   }
+
+   /* ── Divider interno ── */
+   .card-divider {
+       border: none;
+       border-top: 1px solid var(--border);
+       margin: 12px 0;
+   }
+
+   /* ── Empty state ── */
+   .empty-foro {
+       text-align: center;
+       padding: 4rem 2rem;
+       color: var(--muted);
+   }
+
+   .empty-foro i {
+       font-size: 3.5rem;
+       color: var(--cielo);
+       display: block;
+       margin-bottom: 1rem;
+   }
+
+   .empty-foro h5 {
+       font-weight: 700;
+       color: var(--marino);
+       margin-bottom: .5rem;
+   }
+
+   .empty-foro p {
+       font-size: 14px;
+   }
+
+   /* ── Navbar heredado ── */
+
+   #prin .nav-link {
+       color: var(--marino);
+       font-size: 14px;
+       border-radius: 8px;
+       padding: 6px 12px;
+       transition: background .15s, color .15s;
+   }
+
+   #prin .nav-link:hover {
+       background: rgba(255, 255, 255, .1);
+       color: var(--naranja);
+   }
+
+   #prin input[type=search] {
+       background: rgba(255, 255, 255, .1);
+       border: 1px solid rgba(255, 255, 255, .15);
+       border-radius: 20px;
+       color: #fff;
+       font-size: 13px;
+       padding: 6px 14px;
+       width: 180px;
+       outline: none;
+       transition: background .2s, width .3s;
+   }
+
+   #prin input[type=search]::placeholder {
+       color: rgba(255, 255, 255, .45);
+   }
+
+   #prin input[type=search]:focus {
+       background: rgba(255, 255, 255, .18);
+       width: 220px;
+   }
+
+   .user-avatar-img {
+       width: 32px;
+       height: 32px;
+       border-radius: 50%;
+       object-fit: cover;
+       border: 2px solid var(--cielo);
+   }
+
+   .user-avatar {
+       width: 32px;
+       height: 32px;
+       border-radius: 50%;
+       background: var(--azul);
+       color: #fff;
+       font-size: 12px;
+       font-weight: 700;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+   }
+
+   /* ── Hero del foro ── */
+   .foro-hero {
+       background: linear-gradient(135deg, var(--marino) 0%, var(--marino-2) 100%);
+       padding: 3rem 0 2.5rem;
+       position: relative;
+       overflow: hidden;
+   }
+
+   .foro-hero::after {
+       content: '';
+       position: absolute;
+       top: -60px;
+       right: -60px;
+       width: 300px;
+       height: 300px;
+       background: radial-gradient(circle, rgba(142, 202, 230, .15) 0%, transparent 70%);
+       pointer-events: none;
+   }
+
+   .foro-hero h1 {
+       font-size: 2rem;
+       font-weight: 800;
+       color: #fff;
+       margin-bottom: 6px;
+   }
+
+   .foro-hero p {
+       font-size: 15px;
+       color: rgba(255, 255, 255, .65);
+       margin: 0;
+   }
+
+   .btn-nueva-pregunta {
+       background: var(--amarillo);
+       color: var(--marino);
+       border: none;
+       border-radius: 10px;
+       font-size: 14px;
+       font-weight: 700;
+       padding: 10px 22px;
+       text-decoration: none;
+       display: inline-flex;
+       align-items: center;
+       gap: 8px;
+       transition: background .15s, transform .15s;
+   }
+
+   .btn-nueva-pregunta:hover {
+       background: var(--naranja);
+       color: #fff;
+       transform: translateY(-1px);
+   }
+
+
+   /* ── Responsive ── */
+   @media (max-width: 576px) {
+       .pregunta-card {
+           padding: 1rem;
+       }
+
+       .foro-hero h1 {
+           font-size: 1.5rem;
+       }
+
+       .pregunta-footer {
+           flex-direction: column;
+           align-items: flex-start;
+           gap: 10px;
+       }
+   }
