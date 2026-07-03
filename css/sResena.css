@@ -562,11 +562,7 @@ body {
     }
 }
 
-.exito-icon {
-    font-size: 64px;
-    margin-bottom: 16px;
-    animation: spin .6s ease;
-}
+
 
 @keyframes spin {
     from {

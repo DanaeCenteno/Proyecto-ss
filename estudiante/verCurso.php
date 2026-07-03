@@ -30,7 +30,7 @@ $cursoId = (int)($_GET["id"] ?? 0);
 if (!$cursoId) { header("Location: index.php"); exit; }
 
 $stmtC = $conexion->prepare("
-    SELECT c.*, u.nombre AS profesor_nombre, u.avatar AS profesor_avatar
+    SELECT c.*, u.nombre AS profesor_nombre, u.avatar AS profesor_avatar, u.bio AS profesor_bio
     FROM cursos c
     JOIN usuarios u ON u.id = c.profesor_id
     WHERE c.id = ? AND c.estado = 'publicado'
@@ -70,7 +70,7 @@ foreach ($modulos as &$mod) {
 }
 unset($mod);
 
-// 🟢 CONFIGURACIÓN DEL PROGRESO (Para que JS no rompa)
+
 $progreso = [
     'leccionId' => 0,
     'completadas' => 0
@@ -202,37 +202,27 @@ $tieneProgreso = $leccionesVistas > 0;
 
 <body>
 
-    <!-- ══ NAVBAR ══════════════════════════════════════════════ -->
+    <!-- NAVBAR -->
     <header class="d-flex flex-wrap justify-content-between align-items-center py-3 px-4" id="prin">
-        <a href="index.php" class="d-flex align-items-center text-decoration-none">
+        <a href="index.php?uid=<?= $uid ?>" class="d-flex align-items-center text-decoration-none">
             <img src="../img/logoEduTecnia.png" alt="EduTecnia" height="50">
         </a>
         <ul class="nav align-items-center gap-1 mb-0">
             <li class="nav-item">
                 <input type="search" id="courseSearch" placeholder="Buscar cursos...">
             </li>
-            <li><a href="index.php?uid=<?= $uid ?>" class="nav-link active">Inicio</a></li>
-            <li><a href="index.php#cursos" class="nav-link">Cursos</a></li>
-            <li><a href="foroEs.php?uid=<?= $uid ?>" class="nav-link">Foro</a></li>
-
-            <?php if ($usuarioLogueado): ?>
+            <li><a href="index.php?uid=<?= $uid ?>" class="nav-link">Inicio</a></li>
+            <li><a href="index.php?uid=<?= $uid ?>#cursos" class="nav-link">Cursos</a></li>
+            <li><a href="foroEs.php?uid=<?= $uid ?>" class="nav-link active">Foro</a></li>
             <li>
-                <a href="perfil.php" class="nav-link px-2">
-                    <?php if ($avatarUsuario): ?>
-                    <img src="<?= htmlspecialchars($avatarUsuario) ?>" class="user-avatar-img" alt="">
+                <a href="perfil.php?uid=<?= $uid ?>" class="nav-link px-2">
+                    <?php if (!empty($avatarUsuario)): ?>
+                    <img src="<?= $avatarUsuario ?>" alt="Avatar" class="user-avatar-img">
                     <?php else: ?>
-                    <div class="user-avatar"><?= $iniciales ?></div>
+                    <div class="user-avatar-initials"><?= $iniciales ?></div>
                     <?php endif; ?>
                 </a>
             </li>
-            <?php else: ?>
-            <li>
-                <a href="../login.php" class="nav-link fw-semibold"
-                    style="background:var(--amarillo);color:var(--marino);border-radius:10px;padding:8px 18px;">
-                    Ingresar
-                </a>
-            </li>
-            <?php endif; ?>
         </ul>
     </header>
 
@@ -338,7 +328,7 @@ $tieneProgreso = $leccionesVistas > 0;
                                 <li><i class="bi bi-collection-fill"></i> <?= count($modulos) ?> módulos</li>
                                 <li><i class="bi bi-play-btn-fill"></i> <?= $totalLecciones ?> lecciones</li>
                                 <li><i class="bi bi-code-slash"></i> Ejercicios prácticos</li>
-                                <li><i class="bi bi-infinity"></i> Acceso de por vida</li>
+                   
 
                             </ul>
                         </div>
@@ -497,11 +487,9 @@ $tieneProgreso = $leccionesVistas > 0;
                             </div>
                         </div>
                         <p class="prof-bio">
-                            <?= htmlspecialchars($curso['profesor_nombre']) ?> es instructor en EduTecnia con
-                            experiencia
-                            en el área de <?= htmlspecialchars($curso['categoria'] ?? 'tecnología') ?>.
-                            Ha diseñado este curso para que cualquier persona pueda aprender de manera práctica
-                            y efectiva, desde los fundamentos hasta proyectos reales.
+                            <?php if (!empty($curso['profesor_bio'])): ?>
+                                <?= nl2br(htmlspecialchars($curso['profesor_bio'])) ?>
+                            <?php endif; ?>
                         </p>
                     </div>
                 </div>
@@ -710,8 +698,6 @@ $tieneProgreso = $leccionesVistas > 0;
         lista.style.display = isOpen ? 'none' : 'block';
         header.classList.toggle('open', !isOpen);
     }
-
-
     </script>
 </body>
 

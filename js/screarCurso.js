@@ -1,4 +1,3 @@
-
 // ── Mapa de lenguajes → slug de OneCompiler ───────────────
 const LANG_ONECOMPILER = {
     python: 'python', javascript: 'javascript',
@@ -106,6 +105,7 @@ function initTiposContenido() {
     });
     mostrarCampos('video');
 }
+
 /* ── Language dropdown ── */
 function toggleLangDropdown() {
     const panel = document.getElementById('lang-panel');
@@ -250,17 +250,58 @@ function mostrarCampos(tipo) {
     const contenedor = document.getElementById('dynamicFields');
     const campos = {
         video: `
-            <div class="mb-3">
-                <label class="form-label">URL de YouTube </label>
-                <input type="url" id="fieldUrlInput" class="form-control"
-                    placeholder="https://youtube.com/embed/...">
+<div class="mb-3">
+    <label class="form-label">URL de YouTube <small class="text-muted">(opcional si subes un archivo)</small></label>
+    <input type="url" id="fieldUrlInput" class="form-control"
+        placeholder="https://youtube.com/embed/...">
+</div>
+<div class="mb-3">
+    <label class="form-label">— O sube un archivo de Video / Audio</label>
+
+    <!-- Dropzone -->
+    <div id="video-dropzone"
+         ondragover="event.preventDefault(); this.classList.add('drag-over')"
+         ondragleave="this.classList.remove('drag-over')"
+         ondrop="handleVideoDrop(event)"
+         onclick="document.getElementById('video-file-input').click()"
+         style="border:2px dashed #cbd5e1;border-radius:10px;padding:1.5rem 1rem;
+                text-align:center;cursor:pointer;transition:border-color .2s;background:#f8fafc;">
+        <i class="bi bi-film" style="font-size:2rem;color:#94a3b8;display:block;margin-bottom:.4rem;"></i>
+        <p style="font-size:13px;color:#64748b;margin:0;">Arrastra aquí o haz clic para seleccionar</p>
+        <p style="font-size:11px;color:#94a3b8;margin-top:4px;">MP4, MKV, AVI, MOV, WEBM, MP3</p>
+    </div>
+    <input type="file" id="video-file-input" accept=".mp3,.mp4,.mkv,.avi,.mov,.webm"
+           style="display:none" onchange="subirVideo(this.files[0])">
+
+    <!-- Progreso -->
+    <div id="video-upload-progress" style="display:none;align-items:center;gap:10px;margin-top:10px;">
+        <div style="flex:1;">
+            <div id="video-upload-msg" style="font-size:12px;color:#64748b;margin-bottom:4px;"></div>
+            <div style="background:#e2e8f0;border-radius:4px;height:6px;overflow:hidden;">
+                <div id="video-progress-bar" style="background:#4f46e5;height:100%;width:0%;transition:width .3s;"></div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Selecciona el Archivo de Video</label>
-                <input class="form-control" type="file" id="formFileMultiple"
-                    multiple accept=".mp3">
-                <div class="form-text">Formatos: mp3, etc</div>
+        </div>
+    </div>
+
+    <!-- Archivo cargado -->
+    <div id="video-loaded-wrap" style="display:none;margin-top:10px;">
+        <div style="display:flex;align-items:center;gap:10px;background:#f0f4ff;
+                    border:1px solid #c7d2fe;border-radius:8px;padding:10px 14px;">
+            <i class="bi bi-film text-primary fs-5"></i>
+            <div style="flex:1;min-width:0;">
+                <div id="video-loaded-name" style="font-size:13px;font-weight:600;color:#3730a3;
+                     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+                <div id="video-loaded-size" style="font-size:11px;color:#6c757d;"></div>
             </div>
+            <button type="button" onclick="quitarVideo()" class="btn btn-sm btn-outline-danger" title="Quitar">
+                <i class="bi bi-x"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- URL guardada del video subido (oculta) -->
+    <input type="hidden" id="video-url-guardada" value="">
+</div>
             `,
         practica: `
               <div class="mb-4">
@@ -404,9 +445,9 @@ function mostrarCampos(tipo) {
                             background:#fafafa;">
                     <i class="bi bi-file-earmark-arrow-up" style="font-size:1.8rem;color:#adb5bd;display:block;margin-bottom:6px;"></i>
                     <div style="font-size:13px;font-weight:600;color:#6c757d;">Haz clic o arrastra el archivo aquí</div>
-                    <div style="font-size:11px;color:#adb5bd;margin-top:4px;">PDF, Word, PowerPoint, Excel — máx. 20 MB</div>
+                    <div style="font-size:11px;color:#adb5bd;margin-top:4px;">PDF, Word, PowerPoint, Excel </div>
                 </div>
-                <input type="file" id="doc-file-input" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx"
+                <input type="file" id="doc-file-input" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.js,.jsx,.ts,.tsx,.py,.java,.c,.cpp,.cs,.php,.html,.css,.json,.sql,.sh,.zip,.txt"
                        style="display:none;" onchange="subirDocumento(this.files[0])">
 
                 <!-- Progreso de subida -->
@@ -548,6 +589,16 @@ function activarLeccion(leccionId, moduloId) {
         const urlInput = document.getElementById('fieldUrlInput');
         if (urlInput && leccion.url) urlInput.value = leccion.url;
 
+        // ── Para video: si la URL es un archivo local (no youtube), restaurar widget ──
+        if (leccion.tipo === 'video' && leccion.url && !esUrlYoutube(leccion.url)) {
+            const videoUrl = document.getElementById('video-url-guardada');
+            if (videoUrl) videoUrl.value = leccion.url;
+            const nombre = leccion.url.split('/').pop();
+            mostrarVideoCargado(leccion.url, nombre, '');
+            // Limpiar el input de URL de YouTube para evitar confusión
+            if (urlInput) urlInput.value = '';
+        }
+
         // ── Para documento: restaurar archivo cargado ──
         if (leccion.tipo === 'documento' && leccion.url) {
             const docUrl = document.getElementById('doc-url-guardada');
@@ -625,6 +676,12 @@ function guardarEstadoLeccionActiva() {
 
     const urlInput = document.getElementById('fieldUrlInput');
     if (urlInput) leccion.url = urlInput.value;
+
+    // ── Para video: si se subió un archivo local, su URL tiene prioridad ──
+    if (leccion.tipo === 'video') {
+        const videoUrl = document.getElementById('video-url-guardada');
+        if (videoUrl && videoUrl.value) leccion.url = videoUrl.value;
+    }
 
     // ── Para documento: leer URL del archivo subido ──
     if (leccion.tipo === 'documento') {
@@ -770,8 +827,8 @@ async function guardarCurso() {
         const data = await res.json();
 
         if (data.status === 'success') {
-            // Muestra confirmación y redirige al dashboard
-            alert('✅ ' + data.message);
+
+            alert(data.message);
             window.location.href = 'dashboard.php';
         } else {
             alert('❌ Error: ' + data.message);
@@ -784,9 +841,6 @@ async function guardarCurso() {
 
 // ── VISTA PREVIA ──────────────────────────────────────────
 
-// El modal se abre via data-bs-toggle en el botón del PHP.
-// abrirVistaPrevia() solo rellena el contenido; también se dispara
-// desde el evento show.bs.modal como fallback.
 document.addEventListener('DOMContentLoaded', () => {
     const modalEl = document.getElementById('modalVistaPrevia');
     if (modalEl) {
@@ -899,9 +953,37 @@ function previoActivarLeccion(lecId, modulo, lec, lIndex) {
     // ── Video ─────────────────────────────────────────────
     if (lec.tipo === 'video') {
         if (lec.url) {
-            const embedUrl = lec.url.includes('/embed/') ? lec.url
-                : lec.url.replace('watch?v=', 'embed/').replace('youtu.be/', 'www.youtube.com/embed/');
-            html += `<div class="previo-video-wrapper"><iframe src="${escapeHtml(embedUrl)}" allowfullscreen></iframe></div>`;
+            if (esUrlYoutube(lec.url)) {
+                // YouTube → iframe embed
+                const embedUrl = lec.url.includes('/embed/') ? lec.url
+                    : lec.url.replace('watch?v=', 'embed/').replace('youtu.be/', 'www.youtube.com/embed/');
+                html += `<div class="previo-video-wrapper"><iframe src="${escapeHtml(embedUrl)}" allowfullscreen></iframe></div>`;
+            } else {
+                // Archivo local (mp4, mp3, mkv, etc.) → elemento nativo
+                const extVideo = lec.url.split('.').pop().toLowerCase();
+                const esAudio = extVideo === 'mp3';
+                const mimeMap = { mp4: 'video/mp4', webm: 'video/webm', mkv: 'video/x-matroska', avi: 'video/x-msvideo', mov: 'video/quicktime', mp3: 'audio/mpeg' };
+                const mimeType = mimeMap[extVideo] || 'video/mp4';
+                if (esAudio) {
+                    html += `
+                    <div style="background:#1e1e2e;border-radius:12px;padding:2rem 1.5rem;margin-bottom:12px;text-align:center;">
+                        <i class="bi bi-music-note-beamed" style="font-size:3rem;color:#a78bfa;display:block;margin-bottom:1rem;"></i>
+                        <p style="color:#e2e8f0;font-size:13px;margin-bottom:1rem;">${escapeHtml(lec.url.split('/').pop())}</p>
+                        <audio controls style="width:100%;border-radius:8px;">
+                            <source src="${escapeHtml('/pp/profesor/' + lec.url)}" type="${mimeType}">
+                            Tu navegador no soporta reproducción de audio.
+                        </audio>
+                    </div>`;
+                } else {
+                    html += `
+                    <div style="background:#000;border-radius:12px;overflow:hidden;margin-bottom:12px;">
+                        <video controls style="width:100%;max-height:420px;display:block;">
+                            <source src="${escapeHtml('/pp/profesor/' + lec.url)}" type="${mimeType}">
+                            Tu navegador no soporta reproducción de video.
+                        </video>
+                    </div>`;
+                }
+            }
         } else {
             html += `
                 <div class="previo-video-placeholder mb-3"><i class="bi bi-play-circle-fill"></i></div>
@@ -940,11 +1022,24 @@ function previoActivarLeccion(lecId, modulo, lec, lIndex) {
                 pdf: 'bi-file-earmark-pdf-fill', doc: 'bi-file-earmark-word-fill',
                 docx: 'bi-file-earmark-word-fill', ppt: 'bi-file-earmark-ppt-fill',
                 pptx: 'bi-file-earmark-ppt-fill', xls: 'bi-file-earmark-excel-fill',
-                xlsx: 'bi-file-earmark-excel-fill'
+                xlsx: 'bi-file-earmark-excel-fill',
+                // Código
+                js: 'bi-filetype-js', jsx: 'bi-filetype-jsx', ts: 'bi-filetype-tsx',
+                tsx: 'bi-filetype-tsx', py: 'bi-filetype-py', java: 'bi-filetype-java',
+                c: 'bi-filetype-c', cpp: 'bi-filetype-cpp', cs: 'bi-filetype-cs',
+                php: 'bi-filetype-php', html: 'bi-filetype-html', css: 'bi-filetype-css',
+                json: 'bi-filetype-json', sql: 'bi-filetype-sql', sh: 'bi-terminal-fill',
+                zip: 'bi-file-earmark-zip-fill', txt: 'bi-file-earmark-text-fill'
             };
             const colorMap = {
                 pdf: '#dc2626', doc: '#1d4ed8', docx: '#1d4ed8',
-                ppt: '#ea580c', pptx: '#ea580c', xls: '#15803d', xlsx: '#15803d'
+                ppt: '#ea580c', pptx: '#ea580c', xls: '#15803d', xlsx: '#15803d',
+                // Código
+                js: '#f7df1e', jsx: '#61dafb', ts: '#3178c6', tsx: '#3178c6',
+                py: '#3776ab', java: '#b07219', c: '#555555', cpp: '#00599c',
+                cs: '#68217a', php: '#777bb4', html: '#e34c26', css: '#264de4',
+                json: '#000000', sql: '#336791', sh: '#4eaa25',
+                zip: '#6c757d', txt: '#6c757d'
             };
             const icono = iconoMap[ext] || 'bi-file-earmark-fill';
             const color = colorMap[ext] || '#6c757d';
@@ -1060,6 +1155,159 @@ function escapeHtml(str) {
         .replace(/"/g, '&quot;');
 }
 
+
+// ══════════════════════════════════════════════════════════
+// ── GESTIÓN DE VIDEOS ─────────────────────────────────────
+// ══════════════════════════════════════════════════════════
+
+/** Detecta si una cadena es una URL de YouTube (watch, embed o youtu.be) */
+function esUrlYoutube(url) {
+    if (!url) return false;
+    return /youtube\.com|youtu\.be/i.test(url);
+}
+
+function handleVideoDrop(event) {
+    event.preventDefault();
+    document.getElementById('video-dropzone')?.classList.remove('drag-over');
+    const file = event.dataTransfer.files[0];
+    if (file) subirVideo(file);
+}
+
+// ── Banner de error amigable para subidas (video y documentos) ──────────
+function mostrarErrorSubida(tipo, mensaje) {
+    const contenedorId = tipo === 'video' ? 'video-dropzone' : 'doc-dropzone';
+    const bannerId = tipo === 'video' ? 'video-error-banner' : 'doc-error-banner';
+    const contenedor = document.getElementById(contenedorId);
+    if (!contenedor || !contenedor.parentElement) {
+        // Si no encontramos el contenedor, al menos avisamos de alguna forma
+        alert(mensaje);
+        return;
+    }
+
+    let banner = document.getElementById(bannerId);
+    if (!banner) {
+        banner = document.createElement('div');
+        banner.id = bannerId;
+        banner.style.cssText = 'display:flex;align-items:flex-start;gap:8px;margin-top:10px;padding:10px 12px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;color:#991b1b;font-size:13px;line-height:1.4;';
+        contenedor.parentElement.insertBefore(banner, contenedor.nextSibling);
+    }
+    banner.innerHTML = `<i class="bi bi-exclamation-triangle-fill" style="margin-top:1px;"></i><span>${escapeHtml(mensaje)}</span>`;
+    banner.style.display = 'flex';
+}
+
+function ocultarErrorSubida(tipo) {
+    const bannerId = tipo === 'video' ? 'video-error-banner' : 'doc-error-banner';
+    const banner = document.getElementById(bannerId);
+    if (banner) banner.style.display = 'none';
+}
+
+async function subirVideo(file) {
+    if (!file) return;
+
+    ocultarErrorSubida('video');
+
+    const extAceptadas = ['mp4', 'mkv', 'avi', 'mov', 'webm', 'mp3'];
+    const ext = file.name.split('.').pop().toLowerCase();
+
+    if (!extAceptadas.includes(ext)) {
+        mostrarErrorSubida('video', `El formato ".${ext}" no está permitido. Usa MP4, MKV, AVI, MOV, WEBM o MP3.`);
+        return;
+    }
+
+    // Límite de tamaño en el cliente (ajusta este valor al post_max_size/upload_max_filesize real del servidor)
+    const MAX_MB = 500;
+    if (file.size > MAX_MB * 1024 * 1024) {
+        const pesoMb = (file.size / 1024 / 1024).toFixed(1);
+        mostrarErrorSubida('video', `El archivo pesa demasiados megas (${pesoMb} MB de un máximo de ${MAX_MB} MB). Redúcelo o comprímelo e inténtalo de nuevo.`);
+        return;
+    }
+
+    // Mostrar progreso
+    document.getElementById('video-dropzone').style.display = 'none';
+    document.getElementById('video-upload-progress').style.display = 'flex';
+    document.getElementById('video-loaded-wrap').style.display = 'none';
+    document.getElementById('video-upload-msg').textContent = 'Subiendo ' + file.name + '...';
+    document.getElementById('video-progress-bar').style.width = '30%';
+
+    const formData = new FormData();
+    formData.append('archivo', file);
+    formData.append('curso_id', CURSO_ID);
+
+    try {
+        let prog = 30;
+        const timer = setInterval(() => {
+            prog = Math.min(prog + 10, 85);
+            const bar = document.getElementById('video-progress-bar');
+            if (bar) bar.style.width = prog + '%';
+        }, 400);
+
+        const res = await fetch('/pp/administrador/api/cursos/subir_video.php', {
+            method: 'POST', credentials: 'include', body: formData
+        });
+        clearInterval(timer);
+
+        const raw = await res.text();
+        let data;
+        try {
+            data = JSON.parse(raw);
+        } catch (parseErr) {
+            console.error('Respuesta no-JSON del servidor:', raw);
+            // Casi siempre significa que el archivo excede el límite del servidor (post_max_size/upload_max_filesize)
+            data = { ok: false, msg: 'El archivo pesa demasiados megas para el servidor. Redúcelo o comprímelo e inténtalo de nuevo. ' };
+        }
+
+        if (data.ok) {
+            document.getElementById('video-progress-bar').style.width = '100%';
+            setTimeout(() => {
+                document.getElementById('video-upload-progress').style.display = 'none';
+                const tamano = file.size < 1024 * 1024
+                    ? (file.size / 1024).toFixed(1) + ' KB'
+                    : (file.size / 1024 / 1024).toFixed(1) + ' MB';
+                mostrarVideoCargado(data.url, file.name, tamano);
+                const inp = document.getElementById('video-url-guardada');
+                if (inp) inp.value = data.url;
+                if (leccionActiva !== null) {
+                    const lec = modulos.flatMap(m => m.lecciones).find(l => l.id === leccionActiva);
+                    if (lec) lec.url = data.url;
+                }
+                // Limpiar campo YouTube (ya no aplica)
+                const urlYt = document.getElementById('fieldUrlInput');
+                if (urlYt) urlYt.value = '';
+            }, 300);
+        } else {
+            document.getElementById('video-upload-progress').style.display = 'none';
+            document.getElementById('video-dropzone').style.display = 'block';
+            mostrarErrorSubida('video', data.msg || 'No se pudo subir el archivo. Inténtalo de nuevo.');
+        }
+    } catch (err) {
+        document.getElementById('video-upload-progress').style.display = 'none';
+        document.getElementById('video-dropzone').style.display = 'block';
+        console.error(err);
+        mostrarErrorSubida('video', 'No se pudo conectar con el servidor. Revisa tu conexión a internet e inténtalo de nuevo.');
+    }
+}
+
+function mostrarVideoCargado(url, nombre, tamano) {
+    document.getElementById('video-dropzone').style.display = 'none';
+    document.getElementById('video-loaded-wrap').style.display = 'flex';
+    document.getElementById('video-loaded-name').textContent = nombre;
+    document.getElementById('video-loaded-size').textContent = tamano;
+    document.getElementById('video-url-guardada').value = url;
+}
+
+function quitarVideo() {
+    document.getElementById('video-dropzone').style.display = 'block';
+    document.getElementById('video-loaded-wrap').style.display = 'none';
+    document.getElementById('video-url-guardada').value = '';
+    const fi = document.getElementById('video-file-input');
+    if (fi) fi.value = '';
+    if (leccionActiva !== null) {
+        const lec = modulos.flatMap(m => m.lecciones).find(l => l.id === leccionActiva);
+        if (lec) lec.url = '';
+    }
+}
+
+
 // ══════════════════════════════════════════════════════════
 // ── GESTIÓN DE DOCUMENTOS ─────────────────────────────────
 // ══════════════════════════════════════════════════════════
@@ -1068,30 +1316,54 @@ function handleDocDrop(event) {
     event.preventDefault();
     document.getElementById('doc-dropzone')?.classList.remove('drag-over');
     const file = event.dataTransfer.files[0];
-    if (file) subirDocumento(file);
+    if (file) {
+        validarYSubirDocumento(file);
+    }
 }
 
+
+// function validarYSubirDocumento(file) {
+//     const MAX_FILE_SIZE = 50 * 1024 * 1024; // 20 MB
+//     const tamanoMB = (file.size / 1024 / 1024).toFixed(2);
+
+//     // Mostrar tamaño del archivo
+//     console.log(` Archivo: ${file.name} | Tamaño: ${tamanoMB} MB`);
+
+//     if (file.size > MAX_FILE_SIZE) {
+//         console.error(` Archivo rechazado: ${tamanoMB} MB > 50 MB`);
+//         return;
+//     }
+
+//     console.log(` Archivo válido: ${tamanoMB} MB ≤ 50 MB`);
+//     subirDocumento(file);
+// }
+
 async function subirDocumento(file) {
+
     if (!file) return;
 
-    const MAX_MB = 20;
+    ocultarErrorSubida('doc');
+
+    const MAX_MB = 500;
     if (file.size > MAX_MB * 1024 * 1024) {
-        alert(`El archivo supera los ${MAX_MB} MB permitidos.`);
+        const pesoMb = (file.size / 1024 / 1024).toFixed(1);
+        mostrarErrorSubida('doc', `El archivo pesa demasiados megas (${pesoMb} MB de un máximo de ${MAX_MB} MB). Redúcelo e inténtalo de nuevo.`);
         return;
     }
 
-    const aceptados = ['application/pdf',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/vnd.ms-powerpoint',
-        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-        'application/vnd.ms-excel',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+    const extAceptadas = [
+        'pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx',
+        // Código
+        'js', 'jsx', 'ts', 'tsx', 'py', 'java', 'c', 'cpp', 'cs',
+        'php', 'html', 'css', 'json', 'sql', 'sh', 'zip', 'txt'
+    ];
+    const ext = file.name.split('.').pop().toLowerCase();
 
-    if (!aceptados.includes(file.type)) {
-        alert('Formato no permitido. Usa PDF, Word, PowerPoint o Excel.');
+    if (!extAceptadas.includes(ext)) {
+        mostrarErrorSubida('doc', `El formato ".${ext}" no está permitido.`);
         return;
     }
+
 
     // Mostrar progreso
     document.getElementById('doc-dropzone').style.display = 'none';
@@ -1118,7 +1390,14 @@ async function subirDocumento(file) {
         });
         clearInterval(timer);
 
-        const data = await res.json();
+        const raw = await res.text();
+        let data;
+        try {
+            data = JSON.parse(raw);
+        } catch (parseErr) {
+            console.error('Respuesta no-JSON del servidor:', raw);
+            data = { ok: false, msg: 'El archivo pesa demasiados megas para el servidor. Redúcelo e inténtalo de nuevo. ' };
+        }
 
         if (data.ok) {
             document.getElementById('doc-progress-bar').style.width = '100%';
@@ -1140,13 +1419,13 @@ async function subirDocumento(file) {
         } else {
             document.getElementById('doc-upload-progress').style.display = 'none';
             document.getElementById('doc-dropzone').style.display = 'block';
-            alert('Error al subir: ' + (data.msg || 'Error desconocido'));
+            mostrarErrorSubida('doc', data.msg || 'No se pudo subir el archivo. Inténtalo de nuevo.');
         }
     } catch (err) {
         document.getElementById('doc-upload-progress').style.display = 'none';
         document.getElementById('doc-dropzone').style.display = 'block';
         console.error(err);
-        alert('Error de conexión al subir el archivo.');
+        mostrarErrorSubida('doc', 'No se pudo conectar con el servidor. Revisa tu conexión a internet e inténtalo de nuevo.');
     }
 }
 

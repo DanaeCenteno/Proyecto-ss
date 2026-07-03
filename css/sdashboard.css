@@ -5,8 +5,10 @@
     --sidebar: #1E4978;
     --accent: #1E4978;
     --accent2: #4A90B9;
-    --azul: #4A90B9;        /* ← variable faltante usada en .nav-link-item.active */
-    --naranja: #DC8C1E;     /* ← variable faltante usada en .sf-avatar */
+    --azul: #4A90B9;
+    /* ← variable faltante usada en .nav-link-item.active */
+    --naranja: #DC8C1E;
+    /* ← variable faltante usada en .sf-avatar */
     --green: #64B9BE;
     --yellow: #DC8C1E;
     --red: #c0392b;
@@ -163,6 +165,7 @@ body {
     font-size: 11px;
     color: rgba(255, 255, 255, .4);
 }
+
 /* ── MAIN ── */
 .main-wrap {
     margin-left: var(--sidebar-w);
@@ -239,12 +242,12 @@ body {
     right: 6px;
 }
 
-a.btn-new{
+a.btn-new {
     text-decoration: none;
 }
 
 .btn-new {
-    
+
     display: flex;
     align-items: center;
     gap: 6px;
@@ -436,25 +439,42 @@ a.btn-new{
 }
 
 .course-thumb img {
-    width: 100%; height: 100%;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
     display: block;
 }
 
 /* Franjas de color cuando no hay imagen */
-.course-thumb.color-purple { background: linear-gradient(135deg, #1E4978, #4A90B9); }
-.course-thumb.color-blue   { background: linear-gradient(135deg, #4A90B9, #64B9BE); }
-.course-thumb.color-orange { background: linear-gradient(135deg, #DC8C1E, #F0AA32); }
-.course-thumb.color-teal   { background: linear-gradient(135deg, #64B9BE, #3a9a9f); }
-.course-thumb.color-dark   { background: linear-gradient(135deg, #2c3e50, #1E4978); }
+.course-thumb.color-purple {
+    background: linear-gradient(135deg, #1E4978, #4A90B9);
+}
+
+.course-thumb.color-blue {
+    background: linear-gradient(135deg, #4A90B9, #64B9BE);
+}
+
+.course-thumb.color-orange {
+    background: linear-gradient(135deg, #DC8C1E, #F0AA32);
+}
+
+.course-thumb.color-teal {
+    background: linear-gradient(135deg, #64B9BE, #3a9a9f);
+}
+
+.course-thumb.color-dark {
+    background: linear-gradient(135deg, #2c3e50, #1E4978);
+}
 
 /* Overlay para legibilidad del badge */
 .course-thumb::after {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0;
+    top: 0;
+    left: 0;
+    right: 0;
     height: 50px;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.2), transparent);
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), transparent);
     pointer-events: none;
 }
 

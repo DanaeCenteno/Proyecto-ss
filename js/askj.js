@@ -64,7 +64,7 @@ function toggleLanguage(langValue) {
   }
 
   // Actualizar checkboxes visuales
-  document.querySelectorAll('.lang-opt input[type="checkbox"]').forEach(cb => {
+  document.querySelectorAll('.lang-option input[type="checkbox"]').forEach(cb => {
     if (cb.value === 'otro') return;
     cb.checked = selectedLanguages.includes(cb.value);
   });
@@ -243,7 +243,7 @@ function resetForm() {
   selectedLanguages = [];
   document.getElementById('lang-chips').innerHTML = '';
   document.getElementById('lang-trigger-text').textContent = '— Selecciona uno o más lenguajes —';
-  document.querySelectorAll('.lang-opt input[type="checkbox"]').forEach(cb => cb.checked = false);
+  document.querySelectorAll('.lang-option input[type="checkbox"]').forEach(cb => cb.checked = false);
 }
 
 /* ── Toast notifications ── */

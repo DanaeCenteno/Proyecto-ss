@@ -12,15 +12,32 @@ $rolSesion       = $usuarioLogueado ? usuarioRol()    : '';
 $iniciales       = $usuarioLogueado ? inicialesAvatar($nombreUsuario) : '';
 $avatarUsuario   = null;
 
-if ($usuarioLogueado) {
-    $stmtAv = $conexion->prepare("SELECT avatar FROM usuarios WHERE id = ?");
-    $stmtAv->bind_param("i", $uid);
-    $stmtAv->execute();
-    $resAv = $stmtAv->get_result()->fetch_assoc();
-    $stmtAv->close();
-    if ($resAv && !empty($resAv['avatar'])) {
-        $rutaAbs = __DIR__ . '/../' . ltrim($resAv['avatar'], '/');
-        if (file_exists($rutaAbs)) $avatarUsuario = $resAv['avatar'];
+// 💡 1. CONSULTA LOS DATOS DEL AVATAR SI EL USUARIO ESTÁ LOGUEADO
+if ($uid > 0) {
+    $stmtU = $conexion->prepare("SELECT avatar FROM usuarios WHERE id = ?");
+    $stmtU->bind_param("i", $uid);
+    $stmtU->execute();
+    $resU = $stmtU->get_result()->fetch_assoc();
+    $stmtU->close();
+    
+    // 💡 2. PROCESA LA RUTA DEL AVATAR EXTRAÍDO
+    $avatarRaw = $resU['avatar'] ?? '';
+    if (!empty($avatarRaw)) {
+        if (str_starts_with($avatarRaw, 'http')) {
+            $avatarUsuario = $avatarRaw;
+        } else {
+            // Limpiamos las barras iniciales
+            $rutaLimpia = ltrim($avatarRaw, '/');
+            
+            // Dependiendo de tu estructura de carpetas, si index.php está en la raíz:
+            // Verificamos si el archivo existe físicamente en el servidor
+            if (file_exists(__DIR__ . '/' . $rutaLimpia)) {
+                $avatarUsuario = $rutaLimpia;
+            } elseif (file_exists(__DIR__ . '/../' . $rutaLimpia)) {
+                // Si está un nivel atrás (como en el caso de las subcarpetas)
+                $avatarUsuario = '../' . $rutaLimpia;
+            }
+        }
     }
 }
 
@@ -85,7 +102,7 @@ if ($usuarioLogueado) {
                     <input type="search" id="courseSearch" placeholder="Buscar cursos..."
                         oninput="filtrarCursos(this.value)">
                 </li>
-                <li class="nav-item"><a href="index.php" class="nav-link active">Inicio</a></li>
+                <li class="nav-item"><a href="index.php" class="nav-link">Inicio</a></li>
                 <li class="nav-item"><a href="#cursos" class="nav-link">Cursos</a></li>
                 <li class="nav-item"><a href="foroEs.php" class="nav-link">Foro</a></li>
 

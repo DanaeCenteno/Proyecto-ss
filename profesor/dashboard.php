@@ -11,15 +11,26 @@ $uid           = usuarioId();
 $nombreUsuario = usuarioNombre();
 $rolUsuario    = usuarioRol();
 $iniciales     = inicialesAvatar($nombreUsuario);
-$stmtU = $conexion->prepare("SELECT nombre, correo, avatar FROM usuarios WHERE id = ?");
+
+
+// ── Datos del usuario para el sidebar ────────────────────
+$stmtU = $conexion->prepare("SELECT nombre, avatar FROM usuarios WHERE id = ?");
 $stmtU->bind_param("i", $uid);
 $stmtU->execute();
 $usuario = $stmtU->get_result()->fetch_assoc();
 $stmtU->close();
 
-$avatarUsuario = (!empty($usuario['avatar']) && file_exists(__DIR__ . '/../' . ltrim($usuario['avatar'], '/'))) 
-                 ? $usuario['avatar'] 
-                 : null;
+$avatarRaw     = $usuario['avatar'] ?? '';
+$avatarUsuario = '';
+if (!empty($avatarRaw)) {
+    if (str_starts_with($avatarRaw, 'http')) {
+        $avatarUsuario = $avatarRaw;
+    } else {
+        $avatarUsuario = '../' . ltrim($avatarRaw, '/');
+    }
+}
+
+
 // Estadísticas
 $qTotal      = $conexion->query("SELECT COUNT(*) as total FROM cursos WHERE profesor_id = $uid");
 $totalCursos = $qTotal->fetch_assoc()['total'];
@@ -97,7 +108,7 @@ $colores = ['color-purple','color-blue','color-orange','color-teal','color-dark'
 
             <nav class="sidebar-nav">
                 <div class="nav-section-label">Principal</div>
-                <a href="dashboard.php?uid=<?= $uid ?>" class="nav-link-item">
+                <a href="dashboard.php?uid=<?= $uid ?>" class="nav-link-item active">
                     <i class="bi bi-grid-1x2"></i> Dashboard
                 </a>
                 <a href="dashboard.php?uid=<?= $uid ?>#cursos" class="nav-link-item">
@@ -111,7 +122,7 @@ $colores = ['color-purple','color-blue','color-orange','color-teal','color-dark'
                 </a>
 
                 <div class="nav-section-label">Sistema</div>
-                <a href="perfilprof.php" class="nav-link-item active">
+                <a href="perfilprof.php" class="nav-link-item ">
                     <i class="bi bi-person-fill-gear"></i> Mi Perfil
                 </a>
                 <a href="../logout.php" class="nav-link-item">
@@ -224,10 +235,6 @@ $colores = ['color-purple','color-blue','color-orange','color-teal','color-dark'
                                 <a href="curso.php?uid=<?= $uid ?>&id=<?= $curso['id'] ?>" class="btn-action btn-edit">
                                     <i class="bi bi-pencil"></i> Editar
                                 </a>
-                                <a href="verCurso.php?uid=<?= $uid ?>&id=<?= $curso['id'] ?>"
-                                    class="btn-action btn-prev">
-                                    <i class="bi bi-eye"></i> Previa
-                                </a>
                                 <button class="btn-action btn-del" onclick="eliminarCurso(<?= (int)$curso['id'] ?>)">
                                     <i class="bi bi-trash"></i>
                                 </button>
@@ -286,10 +293,7 @@ $colores = ['color-purple','color-blue','color-orange','color-teal','color-dark'
                                     class="btn-action btn-edit">
                                     <i class="bi bi-pencil"></i> Editar
                                 </a>
-                                <a href="verCurso.php?uid=<?= $uid ?>&id=<?= $cursoTotal['id'] ?>"
-                                    class="btn-action btn-prev">
-                                    <i class="bi bi-eye"></i> Previa
-                                </a>
+
                                 <button class="btn-action btn-del"
                                     onclick="eliminarCurso(<?= (int)$cursoTotal['id'] ?>)">
                                     <i class="bi bi-trash"></i>

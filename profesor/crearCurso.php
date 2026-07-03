@@ -11,7 +11,24 @@ $uid           = usuarioId();
 $nombreUsuario = usuarioNombre();
 $rolUsuario    = usuarioRol();
 $iniciales     = inicialesAvatar($nombreUsuario);
-$error      = "";
+$error         = "";
+
+// ── Datos del usuario para el sidebar ────────────────────
+$stmtU = $conexion->prepare("SELECT nombre, avatar FROM usuarios WHERE id = ?");
+$stmtU->bind_param("i", $uid);
+$stmtU->execute();
+$usuario = $stmtU->get_result()->fetch_assoc();
+$stmtU->close();
+
+$avatarRaw     = $usuario['avatar'] ?? '';
+$avatarUsuario = '';
+if (!empty($avatarRaw)) {
+    if (str_starts_with($avatarRaw, 'http')) {
+        $avatarUsuario = $avatarRaw;
+    } else {
+        $avatarUsuario = '../' . ltrim($avatarRaw, '/');
+    }
+}
 
 // ── Verifica que el curso existe y pertenece al profesor ──
 $cursoId = (int)($_GET["id"] ?? 0);
@@ -188,8 +205,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 <div class="layout">
+      <aside class="sidebar">
+            <div class="sidebar-logo">
+                <img src="../img/logoEduTecnia.png" alt="EduTecnia">
+            </div>
 
-    <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">Principal</div>
+                <a href="dashboard.php?uid=<?= $uid ?>" class="nav-link-item active" >
+                    <i class="bi bi-grid-1x2"></i> Dashboard
+                </a>
+                <a href="dashboard.php?uid=<?= $uid ?>#cursos" class="nav-link-item">
+                    <i class="bi bi-collection-play" ></i> Mis Cursos
+                </a>
+                <a href="foro.php?uid=<?= $uid ?>" class="nav-link-item">
+                    <i class="bi bi-question-circle"></i> Foro
+                </a>
+                <a href="estudiantes.php?uid=<?= $uid ?>" class="nav-link-item">
+                    <i class="bi bi-person-square"></i> Estudiantes
+                </a>
+
+                <div class="nav-section-label">Sistema</div>
+                <a href="perfilprof.php" class="nav-link-item ">
+                    <i class="bi bi-person-fill-gear"></i> Mi Perfil
+                </a>
+                <a href="../logout.php" class="nav-link-item">
+                    <i class="bi bi-box-arrow-left"></i> Cerrar sesión
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sf-avatar">
+                    <?php if ($avatarUsuario): ?>
+                    <img src="<?= htmlspecialchars($avatarUsuario) ?>" alt="">
+                    <?php else: ?>
+                    <?= $iniciales ?>
+                    <?php endif; ?>
+                </div>
+                <div class="sf-info">
+                    <div class="sf-name"><?= htmlspecialchars($usuario['nombre']) ?></div>
+                    <div class="sf-role">Profesor</div>
+                </div>
+            </div>
+        </aside>
+
+    <!-- <aside class="sidebar">
         <a href="#" class="sidebar-brand">
             <img src="../img/logoEduTecnia.png" alt="EduTecnia" height="50">
         </a>
@@ -214,7 +274,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="user-role"><?= htmlspecialchars($rolUsuario) ?></div>
             </div>
         </div>
-    </aside>
+    </aside> -->
 
     <div class="main">
 

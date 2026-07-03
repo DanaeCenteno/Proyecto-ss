@@ -180,7 +180,6 @@ body {
     width: 88px;
     height: 88px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--azul), var(--amarillo));
     display: flex;
     align-items: center;
     justify-content: center;

@@ -9,13 +9,27 @@ $uid           = usuarioId();
 $nombreUsuario = usuarioNombre();
 $iniciales     = inicialesAvatar($nombreUsuario);
 
-$stmtU = $conexion->prepare("SELECT nombre, correo, avatar FROM usuarios WHERE id = ?");
+$stmtU = $conexion->prepare("SELECT nombre, correo, avatar, bio FROM usuarios WHERE id = ?");
 $stmtU->bind_param("i", $uid);
 $stmtU->execute();
 $usuario = $stmtU->get_result()->fetch_assoc();
 $stmtU->close();
 
-$avatarUsuario = ($usuario['avatar'] && file_exists($usuario['avatar'])) ? $usuario['avatar'] : null;
+// ── CORRECCIÓN DE LA RUTA DEL AVATAR ────────────────────
+$avatarRaw     = $usuario['avatar'] ?? '';
+$avatarUsuario = null;
+
+if (!empty($avatarRaw)) {
+    if (str_starts_with($avatarRaw, 'http')) {
+        $avatarUsuario = $avatarRaw;
+    } else {
+        // Limpiamos barras y verificamos de forma segura con la ruta absoluta del servidor (__DIR__)
+        $rutaLimpia = ltrim($avatarRaw, '/');
+        if (file_exists(__DIR__ . '/../' . $rutaLimpia)) {
+            $avatarUsuario = '../' . $rutaLimpia;
+        }
+    }
+}
 
 $stmtQ = $conexion->prepare("SELECT id, titulo, contenido, lenguajes, estado, created_at FROM foro_preguntas WHERE usuario_id = ? ORDER BY created_at DESC");
 $stmtQ->bind_param("i", $uid);
@@ -59,12 +73,12 @@ function tiempoRelativo(string $fecha): string {
 
 <body>
 
-    <!-- ══════════════════════════════════════
-     SIDEBAR
-══════════════════════════════════════ -->
+    <!-- ══════════════════════════════════════SIDEBAR══════════════════════════════════════ -->
     <aside class="sidebar">
         <div class="sidebar-logo">
-            <img src="../img/logoEduTecnia.png" alt="EduTecnia">
+            <a href="dashboard.php" class="d-flex align-items-center text-decoration-none">
+                <img src="../img/logoEduTecnia.png" alt="EduTecnia" height="50">
+            </a>
         </div>
 
         <nav class="sidebar-nav">
@@ -78,7 +92,7 @@ function tiempoRelativo(string $fecha): string {
             <a href="foro.php" class="nav-link-item">
                 <i class="bi bi-question-circle"></i> Foro
             </a>
-            <a href="#" class="nav-link-item">
+            <a href="estudiantes.php" class="nav-link-item">
                 <i class="bi bi-person-square"></i> Estudiantes
             </a>
 
@@ -88,7 +102,7 @@ function tiempoRelativo(string $fecha): string {
             </a>
 
             <div class="nav-section-label">Sistema</div>
-            <a href="perfil.php" class="nav-link-item active">
+            <a href="perfilprof.php" class="nav-link-item active">
                 <i class="bi bi-person-fill-gear"></i> Mi Perfil
             </a>
             <a href="../logout.php" class="nav-link-item">
@@ -139,6 +153,13 @@ function tiempoRelativo(string $fecha): string {
                 <div class="hero-info">
                     <h2><?= htmlspecialchars($usuario['nombre']) ?></h2>
                     <div class="role-badge"><i class="fa-solid fa-chalkboard-user"></i> Profesor</div>
+                    <?php if (!empty($usuario['bio'])): ?>
+                    <p id="hero-bio-texto" style="margin:10px 0 0;font-size:13.5px;color:var(--muted);max-width:520px;line-height:1.5;">
+                        <?= nl2br(htmlspecialchars($usuario['bio'])) ?>
+                    </p>
+                    <?php else: ?>
+                    <p id="hero-bio-texto" style="margin:10px 0 0;font-size:13.5px;color:var(--muted);max-width:520px;line-height:1.5;display:none;"></p>
+                    <?php endif; ?>
                     <div class="hero-stats">
                         <div class="stat-item">
                             <div class="stat-num"><?= count($misPreguntas) ?></div>
@@ -190,8 +211,20 @@ function tiempoRelativo(string $fecha): string {
                             disabled style="background:var(--bg);cursor:not-allowed;">
                         <small style="font-size:11px;color:var(--muted);">El correo no puede modificarse.</small>
                     </div>
+                    <div class="mb-4">
+                        <label class="form-label">Biografía</label>
+                        <textarea class="form-control" id="inp-bio" maxlength="500" rows="4"
+                            oninput="document.getElementById('bio-contador').textContent = this.value.length"
+                            placeholder="Cuéntale a tus estudiantes un poco sobre ti (especialidad, experiencia, intereses...)"><?= htmlspecialchars($usuario['bio'] ?? '') ?></textarea>
+                        <small style="font-size:11px;color:var(--muted);">
+                            <span id="bio-contador"><?= mb_strlen($usuario['bio'] ?? '') ?></span>/500 caracteres 
+                        </small>
+                    </div>
                     <button class="btn-guardar" onclick="guardarNombre()">
                         <i class="bi bi-floppy"></i>Guardar nombre
+                    </button>
+                    <button class="btn-guardar" onclick="guardarBio()" style="margin-left:8px;">
+                        <i class="bi bi-floppy"></i>Guardar biografía
                     </button>
                 </div>
 
@@ -315,7 +348,7 @@ function tiempoRelativo(string $fecha): string {
 
         </div><!-- /perfil-body -->
 
-  
+
 
     </div><!-- /main-wrap -->
 
@@ -449,6 +482,41 @@ function tiempoRelativo(string $fecha): string {
             })
             .then(r => r.json())
             .then(d => mostrarToast(d.msg, d.ok ? 'success' : 'error'))
+            .catch(() => mostrarToast('Error de conexión', 'error'));
+    }
+
+    // ── GUARDAR BIOGRAFÍA ───────────────────────────────────────
+    function guardarBio() {
+        const inp = document.getElementById('inp-bio');
+        const bio = inp.value.trim();
+        if (bio.length > 500) {
+            mostrarToast('La biografía no puede superar los 500 caracteres.', 'error');
+            return;
+        }
+
+        const fd = new FormData();
+        fd.append('bio', bio);
+        fetch(`${BASE_URL}/administrador/api/perfil/actualizar_bio.php`, {
+                method: 'POST',
+                body: fd,
+                credentials: 'include'
+            })
+            .then(r => r.json())
+            .then(d => {
+                mostrarToast(d.msg, d.ok ? 'success' : 'error');
+                if (d.ok) {
+                    const heroTexto = document.getElementById('hero-bio-texto');
+                    if (heroTexto) {
+                        if (bio) {
+                            const escapado = bio.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                            heroTexto.innerHTML = escapado.replace(/\n/g, '<br>');
+                            heroTexto.style.display = '';
+                        } else {
+                            heroTexto.style.display = 'none';
+                        }
+                    }
+                }
+            })
             .catch(() => mostrarToast('Error de conexión', 'error'));
     }
 

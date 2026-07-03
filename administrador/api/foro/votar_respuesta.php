@@ -1,8 +1,7 @@
 <?php
 ob_start();
 
-// Importamos la configuración de base de datos y autenticación centralizada de la app
-require_once __DIR__ . '/../../config/db.php'; // Ajusta la ruta según dónde esté db.php respecto a esta API
+require_once __DIR__ . '/../../config/db.php'; 
 require_once __DIR__ . '/../../../includes/auth.php';
 
 iniciarSesion();
@@ -25,7 +24,7 @@ if (!estaAutenticado()) {
     responder(false, 'Debes iniciar sesión para votar.', 401);
 }
 
-// CORREGIDO: Ahora extrae correctamente el ID usando la función nativa del sistema
+
 $usuarioId   = usuarioId();
 
 // Leer datos enviados por POST (Soporta variables normales de formulario)

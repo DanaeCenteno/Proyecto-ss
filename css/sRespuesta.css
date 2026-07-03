@@ -1,18 +1,21 @@
 /* ── Tokens (heredados de sAsk.css) ─── */
 :root {
-    --cielo:    #8ECAE6;
-    --azul:     #219EBC;
-    --marino:   #023047;
+    --cielo: #8ECAE6;
+    --azul: #219EBC;
+    --marino: #023047;
     --amarillo: #FFB703;
-    --naranja:  #FB8500;
+    --naranja: #FB8500;
     --marino-2: #034a6e;
-    --bg:       #f0f7fa;
-    --border:   #d0e8f2;
-    --text:     #023047;
-    --muted:    #5a8ca0;
+    --bg: #f0f7fa;
+    --border: #d0e8f2;
+    --text: #023047;
+    --muted: #5a8ca0;
 }
 
-body { background: var(--bg); font-family: 'Poppins', sans-serif; }
+body {
+    background: var(--bg);
+    font-family: 'Poppins', sans-serif;
+}
 
 /* ── Wrapper ── */
 .resp-wrapper {
@@ -22,7 +25,9 @@ body { background: var(--bg); font-family: 'Poppins', sans-serif; }
 }
 
 /* ── Pregunta original ── */
-.pregunta-original { border-left: 4px solid var(--azul) !important; }
+.pregunta-original {
+    border-left: 4px solid var(--azul) !important;
+}
 
 .pregunta-titulo-h1 {
     font-size: 1.35rem;
@@ -33,8 +38,13 @@ body { background: var(--bg); font-family: 'Poppins', sans-serif; }
 }
 
 /* ── Lang tags (compartido con foro.php) ── */
-.lang-tags  { display: flex; flex-wrap: wrap; gap: 6px; }
-.lang-tag   {
+.lang-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.lang-tag {
     font-size: 11px;
     font-weight: 700;
     padding: 3px 10px;
@@ -45,10 +55,32 @@ body { background: var(--bg); font-family: 'Poppins', sans-serif; }
 }
 
 /* ── Estado badge ── */
-.estado-badge        { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: .5px; }
-.estado-abierta      { background: rgba(33,158,188,.12);  color: var(--azul);  border: 1px solid rgba(33,158,188,.3); }
-.estado-resuelta     { background: rgba(34,197,94,.1);    color: #15803d;       border: 1px solid rgba(34,197,94,.3); }
-.estado-cerrada      { background: rgba(107,114,128,.1);  color: #4b5563;       border: 1px solid rgba(107,114,128,.3); }
+.estado-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.estado-abierta {
+    background: rgba(33, 158, 188, .12);
+    color: var(--azul);
+    border: 1px solid rgba(33, 158, 188, .3);
+}
+
+.estado-resuelta {
+    background: rgba(34, 197, 94, .1);
+    color: #15803d;
+    border: 1px solid rgba(34, 197, 94, .3);
+}
+
+.estado-cerrada {
+    background: rgba(107, 114, 128, .1);
+    color: #4b5563;
+    border: 1px solid rgba(107, 114, 128, .3);
+}
 
 /* ── Contenido Quill readonly ── */
 .pregunta-contenido,
@@ -57,6 +89,7 @@ body { background: var(--bg); font-family: 'Poppins', sans-serif; }
     color: var(--text);
     line-height: 1.8;
 }
+
 .pregunta-contenido pre,
 .resp-contenido pre {
     background: var(--bg);
@@ -66,9 +99,10 @@ body { background: var(--bg); font-family: 'Poppins', sans-serif; }
     font-size: 13px;
     overflow-x: auto;
 }
+
 .pregunta-contenido code,
 .resp-contenido code {
-    background: rgba(142,202,230,.15);
+    background: rgba(142, 202, 230, .15);
     color: var(--marino-2);
     border-radius: 4px;
     padding: 1px 5px;
@@ -77,14 +111,17 @@ body { background: var(--bg); font-family: 'Poppins', sans-serif; }
 
 /* ── Avatares ── */
 .resp-avatar-img {
-    width: 40px; height: 40px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid var(--cielo);
     flex-shrink: 0;
 }
+
 .resp-avatar-initials {
-    width: 40px; height: 40px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--azul), var(--marino-2));
     color: #fff;
@@ -96,8 +133,17 @@ body { background: var(--bg); font-family: 'Poppins', sans-serif; }
     flex-shrink: 0;
     border: 2px solid var(--cielo);
 }
-.resp-autor-nombre { font-size: 13px; font-weight: 700; color: var(--marino); }
-.resp-autor-tiempo { font-size: 12px; color: var(--muted); }
+
+.resp-autor-nombre {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--marino);
+}
+
+.resp-autor-tiempo {
+    font-size: 12px;
+    color: var(--muted);
+}
 
 /* ── Sección título ── */
 .resp-section-title,
@@ -110,8 +156,14 @@ body { background: var(--bg); font-family: 'Poppins', sans-serif; }
     align-items: center;
     gap: 6px;
 }
-.resp-section-title i { color: var(--azul); }
-.resp-form-title i    { color: var(--azul); }
+
+.resp-section-title i {
+    color: var(--azul);
+}
+
+.resp-form-title i {
+    color: var(--azul);
+}
 
 /* ── Tarjeta de respuesta ── */
 .resp-card {
@@ -119,9 +171,17 @@ body { background: var(--bg); font-family: 'Poppins', sans-serif; }
     margin-bottom: 14px;
     position: relative;
 }
+
 @keyframes cardIn {
-    from { opacity:0; transform:translateY(8px); }
-    to   { opacity:1; transform:translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* ── Solución aceptada ── */
@@ -129,13 +189,14 @@ body { background: var(--bg); font-family: 'Poppins', sans-serif; }
     border-color: #22c55e !important;
     border-left: 4px solid #22c55e !important;
 }
+
 .solucion-badge {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    background: rgba(34,197,94,.1);
+    background: rgba(34, 197, 94, .1);
     color: #15803d;
-    border: 1px solid rgba(34,197,94,.35);
+    border: 1px solid rgba(34, 197, 94, .35);
     border-radius: 20px;
     font-size: 11px;
     font-weight: 700;
@@ -152,21 +213,41 @@ body { background: var(--bg); font-family: 'Poppins', sans-serif; }
     align-items: center;
     gap: 2px;
 }
+
 .btn-voto {
     background: none;
     border: 1px solid var(--border);
     border-radius: 6px;
     color: var(--muted);
-    width: 28px; height: 28px;
-    display: flex; align-items: center; justify-content: center;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     font-size: 12px;
     transition: background .15s, color .15s, border-color .15s;
     padding: 0;
 }
-.btn-voto:hover         { background: var(--azul); color: #fff; border-color: var(--azul); }
-.btn-voto.activo-up     { background: var(--azul); color: #fff; border-color: var(--azul); }
-.btn-voto.activo-down   { background: var(--naranja); color: #fff; border-color: var(--naranja); }
+
+.btn-voto:hover {
+    background: var(--azul);
+    color: #fff;
+    border-color: var(--azul);
+}
+
+.btn-voto.activo-up {
+    background: var(--azul);
+    color: #fff;
+    border-color: var(--azul);
+}
+
+.btn-voto.activo-down {
+    background: var(--naranja);
+    color: #fff;
+    border-color: var(--naranja);
+}
+
 .votos-count {
     font-size: 13px;
     font-weight: 700;
@@ -185,12 +266,22 @@ body { background: var(--bg); font-family: 'Poppins', sans-serif; }
     border-radius: 14px;
     margin-bottom: 1rem;
 }
-.resp-empty i { font-size: 2.5rem; color: var(--cielo); display: block; margin-bottom: .75rem; }
-.resp-empty p { font-size: 14px; margin: 0; }
+
+.resp-empty i {
+    font-size: 2.5rem;
+    color: var(--cielo);
+    display: block;
+    margin-bottom: .75rem;
+}
+
+.resp-empty p {
+    font-size: 14px;
+    margin: 0;
+}
 
 /* ── Login prompt ── */
 .resp-login-prompt {
-    background: rgba(142,202,230,.1);
+    background: rgba(142, 202, 230, .1);
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 1.25rem;
@@ -199,8 +290,162 @@ body { background: var(--bg); font-family: 'Poppins', sans-serif; }
     text-align: center;
     margin-top: 1.5rem;
 }
-.resp-login-prompt a { color: var(--azul); font-weight: 600; text-decoration: none; }
-.resp-login-prompt a:hover { color: var(--marino); text-decoration: underline; }
+
+.resp-login-prompt a {
+    color: var(--azul);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.resp-login-prompt a:hover {
+    color: var(--marino);
+    text-decoration: underline;
+}
 
 /* ── Quill editor para respuesta ── */
-#resp-editor .ql-editor { min-height: 160px; }
+#resp-editor .ql-editor {
+    min-height: 160px;
+}
+
+/* ══════════════════════════════════════
+   NAVBAR
+══════════════════════════════════════ */
+#prin {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255, 255, 255, .96);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid #e5e7eb;
+    padding: 8px 1.5rem;
+}
+
+#prin .nav-link {
+    color: var(--marino);
+    font-size: 14px;
+    border-radius: 8px;
+    padding: 6px 12px;
+    transition: background .15s, color .15s;
+    
+}
+
+#prin .nav-link:hover {
+    background: rgba(2, 48, 71, .06);
+    color: var(--azul);
+}
+
+#prin .nav-link.active {
+    color: var(--azul);
+    font-weight: 600;
+}
+
+/* Buscador dentro del navbar claro */
+#courseSearch {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    color: var(--text);
+    font-size: 13px;
+    padding: 6px 14px;
+    width: 190px;
+    outline: none;
+    transition: border-color .2s, width .3s;
+}
+
+#courseSearch::placeholder {
+    color: var(--muted);
+}
+
+#courseSearch:focus {
+    border-color: var(--azul);
+    box-shadow: 0 0 0 3px rgba(33, 158, 188, .12);
+    background: #fff;
+    width: 220px;
+}
+
+/* Avatar en el navbar — tamaño compacto */
+.user-avatar-img {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--cielo);
+    transition: transform .2s;
+}
+
+.user-avatar-img:hover {
+    transform: scale(1.08);
+}
+
+/* Iniciales en el navbar — diferente a .resp-avatar-initials (que es para autores de respuestas) */
+#prin .user-avatar-initials {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--naranja);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(255, 255, 255, .2);
+    flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════
+   ESTADO BADGES — clase "status-*" usada en el HTML del foro
+══════════════════════════════════════ */
+[class^="status-"],
+[class*=" status-"] {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: capitalize;
+    letter-spacing: .4px;
+}
+
+.status-abierta {
+    background: rgba(33, 158, 188, .12);
+    color: var(--azul);
+    border: 1px solid rgba(33, 158, 188, .3);
+}
+
+.status-resuelta {
+    background: rgba(34, 197, 94, .1);
+    color: #15803d;
+    border: 1px solid rgba(34, 197, 94, .3);
+}
+
+.status-cerrada {
+    background: rgba(107, 114, 128, .1);
+    color: #4b5563;
+    border: 1px solid rgba(107, 114, 128, .3);
+}
+
+/* ══════════════════════════════════════
+   FOOTER
+══════════════════════════════════════ */
+footer {
+    background: var(--marino);
+    border-top: 3px solid var(--amarillo);
+    padding: 32px 2rem;
+    margin-top: 3rem;
+}
+
+#div-footer {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+#div-footer span {
+    font-size: 13px;
+    color: rgba(255, 255, 255, .4);
+}

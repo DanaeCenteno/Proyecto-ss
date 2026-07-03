@@ -358,14 +358,13 @@ function tipoLabel($tipo) {
                     $urlDoc = $leccionActiva['url'] ?? '';
                     $ext    = strtolower(pathinfo(parse_url($urlDoc, PHP_URL_PATH), PATHINFO_EXTENSION));
 
-                    // Carpeta raíz de la app (sube desde /pp/estudiante o /pp/profesor hasta /pp)
-                    // Ajusta '/pp' si tu proyecto se llama distinto.
+            
                     $appRoot = '/pp';
 
-                    // Ruta ABSOLUTA desde la raíz del sitio: los archivos SIEMPRE están en profesor/
+            
                     if ($urlDoc && !preg_match('#^https?://#i', $urlDoc)) {
-                        $rutaRel = ltrim($urlDoc, '/');                 // uploads/cursos/curso_23/archivo.pdf
-                        $urlDoc  = $appRoot . '/profesor/' . $rutaRel;  // /pp/profesor/uploads/cursos/...
+                        $rutaRel = ltrim($urlDoc, '/');                 
+                        $urlDoc  = $appRoot . '/profesor/' . $rutaRel;  
                     }
 
                     // URL absoluta completa (para el visor de Office)
@@ -392,11 +391,14 @@ function tipoLabel($tipo) {
                     <iframe src="https://view.officeapps.live.com/op/embed.aspx?src=<?= urlencode($urlAbs) ?>"
                         title="Vista previa de la presentación" allowfullscreen></iframe>
                 </div>
-                <p class="doc-note">
+
+
+                
+                <!-- <p class="doc-note">
                     <i class="bi bi-info-circle"></i>
                     La vista previa de Office requiere que el archivo sea accesible públicamente.
                     Si no se ve (por ejemplo en <strong>localhost</strong>), usa el botón Descargar.
-                </p>
+                </p> -->
 
                 <?php else: ?>
                 <div class="doc-viewer doc-viewer--empty">
@@ -443,7 +445,7 @@ function tipoLabel($tipo) {
 
                 <?php endif; // fin leccionActiva ?>
 
-            </div><!-- /content-area -->
+            </div>
 
             <!-- ══ NAVEGACIÓN INFERIOR ════════════════════════════ -->
             <div class="nav-bottom">
@@ -477,8 +479,8 @@ function tipoLabel($tipo) {
                 <?php endif; ?>
             </div>
 
-        </div><!-- /main-panel -->
-    </div><!-- /player-layout -->
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -487,7 +489,7 @@ function tipoLabel($tipo) {
     const LECCION_ID = <?= (int)($leccionActiva['id'] ?? 0) ?>;
     const TOTAL_LEC = <?= $totalLecciones ?>;
 
-    // IDs de lecciones ya vistas (desde BD)
+
     let vistasSet = new Set(<?= json_encode($leccionesVistas) ?>);
 
     // ── Toggle sidebar ────────────────────────────────────────
@@ -522,7 +524,7 @@ function tipoLabel($tipo) {
             }
         } catch (e) {
             output.style.color = '#f87171';
-            output.textContent = '❌ Error: ' + e.message;
+            output.textContent = ' Error: ' + e.message;
         }
     }
 

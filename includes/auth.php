@@ -78,3 +78,19 @@ function urlConId(string $ruta): string {
     $sep = str_contains($ruta, '?') ? '&' : '?';
     return BASE_URL . '/' . ltrim($ruta, '/') . "{$sep}uid={$uid}";
 }
+
+
+function validarCorreoInstitucional(string $correo): bool
+{
+    // 1. Limpiar espacios en blanco y convertir a minúsculas
+    $correo = strtolower(trim($correo));
+
+    // 2. Validar formato general de correo electrónico
+    if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+        return false;
+    }
+
+    // 3. Validar que termine exactamente en @cua.uam.mx
+    return (bool)preg_match('/^[a-zA-Z0-9._%+-]+@cua\.uam\.mx$/', $correo);
+}
+

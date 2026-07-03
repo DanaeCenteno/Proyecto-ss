@@ -310,7 +310,7 @@ if (!empty($curso['imagen'])) {
 <!-- OVERLAY ÉXITO -->
 <div class="exito-overlay" id="exitoOverlay">
     <div class="exito-box">
-        <div class="exito-icon">🏆</div>
+        
         <h3>¡Gracias por tu reseña!</h3>
         <p>Tu opinión ayuda a otros estudiantes a elegir el mejor curso para ellos.</p>
         <a href="index.php" class="btn-exito">

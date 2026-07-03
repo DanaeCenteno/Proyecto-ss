@@ -109,8 +109,13 @@ body {
     border-left-color: var(--azul);
     font-weight: 600;
 }
-
-
+.sidebar-footer {
+    padding: 16px 20px;
+    border-top: 1px solid rgba(255, 255, 255, .07);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
 .sf-avatar {
     width: 34px;

@@ -94,7 +94,7 @@ function publicarRespuesta() {
             throw new Error("Sesión inválida o expirada. Por favor, vuelve a iniciar sesión.");
         }
         if (!res.ok) {
-            throw new Error("No se encontró el archivo o el servidor dio error (Error " + res.status + ").");
+            throw new Error("La Pregunta tiene estado cerrada, no puedes responder (Error " + res.status + ").");
         }
         return res.json();
     })

@@ -19,15 +19,24 @@ $rolUsuario    = usuarioRol();
 $iniciales     = inicialesAvatar($nombreUsuario);
 $avatarUsuario   = null;
 
-  // Carga el avatar desde la BD
-    $stmtUsuario = $conexion->prepare("SELECT avatar FROM usuarios WHERE id = ?");
-    $stmtUsuario->bind_param("i", $uid);
-    $stmtUsuario->execute();
-    $resUsuario = $stmtUsuario->get_result()->fetch_assoc();
-    
-    if ($resUsuario && !empty($resUsuario['avatar']) && file_exists($resUsuario['avatar'])) {
-        $avatarUsuario = $resUsuario['avatar'];
+// Cargar avatar del usuario activo corrigiendo rutas relativas
+$stmtU = $conexion->prepare("SELECT avatar FROM usuarios WHERE id = ? LIMIT 1");
+$stmtU->bind_param("i", $uid);
+$stmtU->execute();
+$resU = $stmtU->get_result()->fetch_assoc();
+$stmtU->close();
+
+if ($resU && !empty($resU['avatar'])) {
+    $avatarRaw = $resU['avatar'];
+    if (str_starts_with($avatarRaw, 'http')) {
+        $avatarUsuario = $avatarRaw;
+    } else {
+        $rutaLimpia = ltrim($avatarRaw, '/');
+        if (file_exists(__DIR__ . '/../' . $rutaLimpia)) {
+            $avatarUsuario = '../' . $rutaLimpia;
+        }
     }
+}
 
 // ── Incrementar vistas ────────────────────────────────────
 $conexion->query("UPDATE foro_preguntas SET vistas = vistas + 1 WHERE id = $preguntaId");
@@ -125,16 +134,14 @@ $langs = $pregunta['lenguajes']
             <li><a href="dashboard.php?uid=<?= $uid ?>" class="nav-link">Inicio</a></li>
             <li><a href="dashboard.php?uid=<?= $uid ?>#cursos" class="nav-link">Cursos</a></li>
             <li><a href="foro.php" class="nav-link">Foro</a></li>
-            <li><a href="#" class="nav-link">Blog</a></li>
-            <?php if ($uid): ?>
+
+            <?php if ($nombreUsuario): ?>
             <li>
                 <a href="perfilprof.php" class="nav-link px-2">
                     <?php if ($avatarUsuario): ?>
                     <img src="<?= htmlspecialchars($avatarUsuario) ?>" class="user-avatar-img" alt="">
                     <?php else: ?>
-                    <div class="user-avatar">
-                        <?= $iniciales ?>
-                    </div>
+                    <div class="user-avatar"><?= $iniciales ?></div>
                     <?php endif; ?>
                 </a>
             </li>
@@ -148,6 +155,7 @@ $langs = $pregunta['lenguajes']
             <?php endif; ?>
         </ul>
     </header>
+
 
     <div class="container">
         <div class="resp-wrapper">

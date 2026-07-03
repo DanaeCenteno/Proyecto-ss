@@ -16,8 +16,24 @@ $stmtU->execute();
 $usuario = $stmtU->get_result()->fetch_assoc();
 $stmtU->close();
 
-$avatarUsuario = (!empty($usuario['avatar']) && file_exists(__DIR__ . '/../' . ltrim($usuario['avatar'], '/')))
-                 ? $usuario['avatar'] : null;
+// ── CORRECCIÓN DE LA RUTA DEL AVATAR ────────────────────
+$avatarRaw     = $usuario['avatar'] ?? '';
+$avatarUsuario = null;
+
+if (!empty($avatarRaw)) {
+    if (str_starts_with($avatarRaw, 'http')) {
+        $avatarUsuario = $avatarRaw;
+    } else {
+        // Limpiamos las barras iniciales
+        $rutaLimpia = ltrim($avatarRaw, '/');
+        
+        // Verificamos de forma segura subiendo un nivel con __DIR__
+        if (file_exists(__DIR__ . '/../' . $rutaLimpia)) {
+            // Le indicamos al navegador que suba un nivel para encontrar la carpeta uploads/
+            $avatarUsuario = '../' . $rutaLimpia;
+        }
+    }
+}
 
 // ── Cursos inscritos ──────────────────────────────────────
 $stmtCursos = $conexion->prepare("
@@ -118,6 +134,22 @@ function tiempoRelativo(string $fecha): string {
                 <span
                     style="margin-left:auto;background:var(--azul);color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;">
                     <?= count($misCursos) ?>
+                </span>
+            </a>
+
+            <a href="perfil.php" onclick="switchTab('preguntas');return false;" class="sb-link">
+                <i class="bi bi-journal-bookmark-fill"></i> Mis preguntas
+                <span
+                    style="margin-left:auto;background:var(--azul);color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;">
+                    <?= count($misPreguntas) ?>
+                </span>
+            </a>
+
+            <a href="perfil.php" onclick="switchTab('respuestas');return false;" class="sb-link">
+                <i class="bi bi-journal-bookmark-fill"></i> Mis respuestas
+                <span
+                    style="margin-left:auto;background:var(--azul);color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;">
+                    <?= count($misRespuestas) ?>
                 </span>
             </a>
 
@@ -356,7 +388,7 @@ function tiempoRelativo(string $fecha): string {
                         <button class="btn-fi btn-fi-red" onclick="eliminarPregunta(<?= $q['id'] ?>)">
                             <i class="bi bi-trash-fill"></i> Eliminar
                         </button>
-                        <a href="respuesta.php?id=<?= $q['id'] ?>" class="btn-fi btn-fi-blue"
+                        <a href="respuestaEs.php?id=<?= $q['id'] ?>" class="btn-fi btn-fi-blue"
                             style="text-decoration:none;">
                             <i class="bi bi-eye-fill"></i> Ver
                         </a>
@@ -382,7 +414,7 @@ function tiempoRelativo(string $fecha): string {
                     <div class="ri-ref">
                         <i class="bi bi-link-45deg"></i>
                         En: <a
-                            href="respuesta.php?id=<?= $r['pregunta_id'] ?>"><?= htmlspecialchars($r['pregunta_titulo']) ?></a>
+                            href="respuestaEs.php?id=<?= $r['pregunta_id'] ?>"><?= htmlspecialchars($r['pregunta_titulo']) ?></a>
                     </div>
                     <div class="ri-body ql-editor" style="padding:0;"><?= $r['contenido'] ?></div>
                     <div class="fi-meta" style="margin-top:10px;">

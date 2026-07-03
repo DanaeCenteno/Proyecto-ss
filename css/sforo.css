@@ -1,4 +1,4 @@
-   :root {
+:root {
        --cielo: #8ECAE6;
        --azul: #219EBC;
        --marino: #023047;
@@ -23,11 +23,10 @@
        position: sticky;
        top: 0;
        z-index: 100;
-       /* background: rgba(255, 255, 255, .92); */
+       background: rgba(255, 255, 255, .96);
        backdrop-filter: blur(12px);
-
+       -webkit-backdrop-filter: blur(12px);
        border-bottom: 1px solid #e5e7eb;
-
    }
 
    /* ── Hero ── */
@@ -387,8 +386,7 @@
        font-size: 14px;
    }
 
-   /* ── Navbar heredado ── */
-
+   /* ── Nav-links del header (foro) ── */
    #prin .nav-link {
        color: var(--marino);
        font-size: 14px;
@@ -397,54 +395,41 @@
        transition: background .15s, color .15s;
    }
 
-   #prin .nav-link:hover {
-       background: rgba(255, 255, 255, .1);
-       color: var(--naranja);
+   #prin .nav-link:hover,
+   #prin .nav-link.active {
+       background: rgba(2, 48, 71, .07);
+       color: var(--azul);
    }
 
-   #prin input[type=search] {
-       background: rgba(255, 255, 255, .1);
-       border: 1px solid rgba(255, 255, 255, .15);
+   /* Buscador dentro del header claro */
+   #prin input[type=search],
+   #courseSearch {
+       background: var(--bg);
+       border: 1.5px solid var(--border);
        border-radius: 20px;
-       color: #fff;
+       color: var(--text);
        font-size: 13px;
        padding: 6px 14px;
-       width: 180px;
+       width: 190px;
        outline: none;
-       transition: background .2s, width .3s;
+       transition: background .2s, width .3s, border-color .2s;
    }
 
-   #prin input[type=search]::placeholder {
-       color: rgba(255, 255, 255, .45);
+   #prin input[type=search]::placeholder,
+   #courseSearch::placeholder {
+       color: var(--muted);
    }
 
-   #prin input[type=search]:focus {
-       background: rgba(255, 255, 255, .18);
-       width: 220px;
+   #prin input[type=search]:focus,
+   #courseSearch:focus {
+       border-color: var(--azul);
+       box-shadow: 0 0 0 3px rgba(33, 158, 188, .12);
+       background: #fff;
+       width: 230px;
    }
 
-   .user-avatar-img {
-       width: 32px;
-       height: 32px;
-       border-radius: 50%;
-       object-fit: cover;
-       border: 2px solid var(--cielo);
-   }
 
-   .user-avatar {
-       width: 32px;
-       height: 32px;
-       border-radius: 50%;
-       background: var(--azul);
-       color: #fff;
-       font-size: 12px;
-       font-weight: 700;
-       display: flex;
-       align-items: center;
-       justify-content: center;
-   }
-
-   /* ── Hero del foro ── */
+   /* ── Responsive ── */
    .foro-hero {
        background: linear-gradient(135deg, var(--marino) 0%, var(--marino-2) 100%);
        padding: 3rem 0 2.5rem;

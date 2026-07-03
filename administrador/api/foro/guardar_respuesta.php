@@ -1,26 +1,14 @@
 <?php
-// ── Buffer: captura cualquier output accidental ───────────
+
 ob_start();
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once __DIR__ . '/../../config/db.php';   // usa la misma conexión que el resto de la app
+require_once __DIR__ . '/../../../includes/auth.php';
 
+iniciarSesion();
 
-
-// ── Conexión propia sin die() ─────────────────────────────
-$server   = "localhost";
-$user     = "root";
-$password = "";
-$db       = "eduforge";
-
-$conexion = new mysqli($server, $user, $password, $db);
-$conexion->set_charset("utf8mb4");
-
-// Header JSON siempre — antes de cualquier echo o respuesta
 header('Content-Type: application/json; charset=utf-8');
 
-// Helper: limpia buffer y responde JSON
 function responder(bool $ok, string $msg, int $code = 200, array $extra = []): void {
     ob_end_clean();
     http_response_code($code);
@@ -28,20 +16,21 @@ function responder(bool $ok, string $msg, int $code = 200, array $extra = []): v
     exit;
 }
 
-// ── 1. Verificar conexión a la base de datos ─────────────────
 if ($conexion->connect_errno) {
     responder(false, 'Error de conexión a la BD: ' . $conexion->connect_error, 500);
 }
-
-// ── 2. Validar que la petición sea estrictamente POST ────────
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     responder(false, 'Método no permitido.', 405);
 }
-
-// ── 3. Verificar sesión activa obligatoriamente ──────────────
-if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) { 
+if (!estaAutenticado()) {
     responder(false, 'Debes iniciar sesión para responder una pregunta.', 401);
 }
+
+$usuarioId  = usuarioId();
+$preguntaId = (int) ($_POST['pregunta_id'] ?? 0);
+$contenido  = trim($_POST['contenido'] ?? '');
+
+
 
 // ── 4. Capturar y sanitizar variables de forma segura ────────
 $usuarioId   = (int) $_SESSION['user_id']; 

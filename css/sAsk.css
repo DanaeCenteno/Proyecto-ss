@@ -12,54 +12,98 @@
   --muted: #5a8ca0;
 }
 
-
-/* ── Navbar ── */
-#prin {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  /* background: rgba(255, 255, 255, .92); */
-  backdrop-filter: blur(12px);
-
-  border-bottom: 1px solid #e5e7eb;
-
+body{
+      font-family: 'Poppins', sans-serif;
 }
 
-/* Avatar con foto de perfil */
+/* ══════════════════════════════════════
+   NAVBAR
+══════════════════════════════════════ */
+#prin {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255, 255, 255, .96);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid #e5e7eb;
+    padding: 8px 1.5rem;
+}
+
+#prin .nav-link {
+    color: var(--marino);
+    font-size: 14px;
+    border-radius: 8px;
+    padding: 6px 12px;
+    transition: background .15s, color .15s;
+  
+}
+
+#prin .nav-link:hover {
+    background: rgba(2, 48, 71, .06);
+    color: var(--azul);
+}
+
+#prin .nav-link.active {
+    color: var(--azul);
+    font-weight: 600;
+}
+
+/* Buscador dentro del navbar claro */
+#courseSearch {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    color: var(--text);
+    font-size: 13px;
+    padding: 6px 14px;
+    width: 190px;
+    outline: none;
+    transition: border-color .2s, width .3s;
+}
+
+#courseSearch::placeholder {
+    color: var(--muted);
+}
+
+#courseSearch:focus {
+    border-color: var(--azul);
+    box-shadow: 0 0 0 3px rgba(33, 158, 188, .12);
+    background: #fff;
+    width: 220px;
+}
+
+/* Avatar en el navbar — tamaño compacto */
 .user-avatar-img {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.2s ease;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--cielo);
+    transition: transform .2s;
 }
 
 .user-avatar-img:hover {
-  border-color: rgba(255, 255, 255, 0.5);
-  transform: scale(1.05);
+    transform: scale(1.08);
 }
 
-/* Avatar con iniciales (ya existente, asegúrate que esté) */
-.user-avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: #FB8500;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  display: grid;
-  place-items: center;
-  font-size: 13px;
-  font-weight: 700;
-  color: #fff;
-  transition: all 0.2s ease;
+/* Iniciales en el navbar — diferente a .resp-avatar-initials (que es para autores de respuestas) */
+#prin .user-avatar-initials {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--naranja);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(255, 255, 255, .2);
+    flex-shrink: 0;
 }
 
-.user-avatar:hover {
-  background: #219EBC;
-  border-color: rgba(255, 255, 255, 0.5);
-  transform: scale(1.05);
-}
+
 
 /* ─── Page Layout ─── */
 body {
@@ -74,18 +118,26 @@ body {
 
 /* ── Buscador ── */
 #courseSearch {
-  border-radius: 10px;
-  border: 1.5px solid #e5e7eb;
-  padding: 8px 14px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  color: var(--text);
   font-size: 13px;
-  width: 220px;
-  transition: border-color .2s;
+  padding: 6px 14px;
+  width: 190px;
+  outline: none;
+  transition: border-color .2s, width .3s;
+}
+
+#courseSearch::placeholder {
+  color: var(--muted);
 }
 
 #courseSearch:focus {
-  border-color: #8ECAE6;
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, .12);
+  border-color: var(--azul);
+  box-shadow: 0 0 0 3px rgba(33, 158, 188, .12);
+  background: #fff;
+  width: 220px;
 }
 
 
@@ -204,7 +256,7 @@ body {
 }
 
 .lang-trigger:focus,
-.lang-trigger.open {
+.lang-trigger.active {
   border-color: var(--azul);
   box-shadow: 0 0 0 3px rgba(33, 158, 188, .15);
   outline: none;
@@ -219,11 +271,9 @@ body {
   flex: 1;
 }
 
-.lang-trigger.has-selection #lang-trigger-text {
-  color: var(--marino);
-  opacity: 1;
-  font-weight: 500;
-}
+/* Nota: askj.js solo cambia el textContent del trigger (no agrega clases),
+   así que no hay un selector CSS limpio para diferenciar "placeholder" de
+   "seleccionado". El color por defecto cubre ambos casos razonablemente. */
 
 .lang-chevron {
   font-size: 12px;
@@ -233,7 +283,9 @@ body {
   flex-shrink: 0;
 }
 
-.lang-chevron.rotated {
+/* askj.js solo togglea .active en el trigger, no en el chevron directamente;
+   rotamos el chevron heredando el estado del trigger padre */
+.lang-trigger.active .lang-chevron {
   transform: rotate(180deg);
   color: var(--azul);
 }
@@ -249,93 +301,71 @@ body {
   border-radius: 10px;
   box-shadow: 0 8px 28px rgba(2, 48, 71, .13);
   z-index: 500;
-  overflow: hidden;
+  padding: 14px;
 }
 
 .lang-panel.open {
   display: block;
 }
 
-.lang-panel-search {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg);
-}
-
-.lang-panel-search i {
-  color: var(--muted);
-  font-size: 13px;
-}
-
-.lang-panel-search input {
-  border: none;
-  outline: none;
-  font-size: 13px;
-  color: var(--text);
-  width: 100%;
-  background: transparent;
-}
-
-.lang-panel-search input::placeholder {
-  color: var(--muted);
-}
-
-.lang-options {
-  max-height: 220px;
+/* Contenedor flex de las pills (el <div class="d-flex flex-wrap gap-2">) */
+.lang-panel > .d-flex {
+  max-height: 240px;
   overflow-y: auto;
-  padding: 6px 0;
 }
 
+/* Cada opción es un "pill" clicable: el checkbox sigue existiendo mas no se ve,
+   el estado checked se refleja con un cambio de fondo/borde en el label */
 .lang-option {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 14px;
-  font-size: 14px;
+  gap: 6px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 500;
   color: var(--text);
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
   cursor: pointer;
-  transition: background .1s;
+  transition: background .15s, border-color .15s, color .15s, transform .1s;
   margin: 0;
-  font-weight: 400;
+  user-select: none;
 }
 
 .lang-option:hover {
-  background: var(--bg);
+  border-color: var(--azul);
+  background: rgba(33, 158, 188, .08);
+}
+
+.lang-option:active {
+  transform: scale(.97);
 }
 
 .lang-option input[type="checkbox"] {
-  display: none;
+  /* Oculto visualmente pero accesible (no display:none para mantener foco/tab) */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
-.lang-check-box {
-  width: 16px;
-  height: 16px;
-  border: 1.5px solid var(--border);
-  border-radius: 4px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background .15s, border-color .15s;
-}
-
-.lang-option input:checked~.lang-check-box {
+.lang-option:has(input:checked) {
   background: var(--azul);
   border-color: var(--azul);
+  color: #fff;
 }
 
-.lang-option input:checked~.lang-check-box::after {
-  content: '';
-  width: 4px;
-  height: 7px;
-  border: 2px solid #fff;
-  border-top: none;
-  border-left: none;
-  transform: rotate(45deg) translateY(-1px);
-  display: block;
+/* Fallback para navegadores sin soporte de :has() */
+.lang-option.is-checked {
+  background: var(--azul);
+  border-color: var(--azul);
+  color: #fff;
 }
 
 .lang-option.hidden {
@@ -343,50 +373,32 @@ body {
 }
 
 .lang-option-otro {
-  border-top: 1px solid var(--border);
-  margin-top: 4px;
-  padding-top: 10px;
-  color: var(--muted);
-  font-style: italic;
+  border: 1.5px dashed var(--border);
+  background: transparent;
 }
 
-.lang-panel-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 14px;
-  border-top: 1px solid var(--border);
-  background: var(--bg);
+.lang-option-otro:has(input:checked),
+.lang-option-otro.is-checked {
+  border-style: solid;
 }
 
-.lang-clear-btn {
-  font-size: 12px;
-  color: var(--muted);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  transition: color .15s;
-}
-
-.lang-clear-btn:hover {
-  color: var(--naranja);
-}
-
-.lang-done-btn {
+#lang-otro-input {
   font-size: 13px;
-  font-weight: 700;
-  color: var(--azul);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  transition: color .15s;
 }
 
-.lang-done-btn:hover {
-  color: var(--marino);
+#btn-add-otro {
+  border-radius: 8px;
+  background: var(--azul);
+  border-color: var(--azul);
+  font-size: 12px;
+  font-weight: 600;
 }
+
+#btn-add-otro:hover {
+  background: var(--marino2, var(--marino));
+  border-color: var(--marino2, var(--marino));
+}
+
 
 /* ─── Chips ─── */
 .lang-chips {
@@ -396,7 +408,7 @@ body {
   margin-top: 8px;
 }
 
-.lang-chip {
+.badge-lang {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -422,19 +434,16 @@ body {
   }
 }
 
-.lang-chip-remove {
-  background: none;
-  border: none;
+/* El ícono "×" va inline sin clase propia (generado por askj.js como <i>) */
+.badge-lang i {
   cursor: pointer;
   color: var(--azul);
-  padding: 0;
-  font-size: 14px;
-  line-height: 1;
+  font-size: 11px;
   opacity: .6;
-  transition: opacity .15s;
+  transition: opacity .15s, color .15s;
 }
 
-.lang-chip-remove:hover {
+.badge-lang i:hover {
   opacity: 1;
   color: var(--naranja);
 }
@@ -849,20 +858,20 @@ body {
 }
 
 /* ─── Scrollbar dropdown ─── */
-.lang-options::-webkit-scrollbar {
+.lang-panel > .d-flex::-webkit-scrollbar {
   width: 5px;
 }
 
-.lang-options::-webkit-scrollbar-track {
+.lang-panel > .d-flex::-webkit-scrollbar-track {
   background: var(--bg);
 }
 
-.lang-options::-webkit-scrollbar-thumb {
+.lang-panel > .d-flex::-webkit-scrollbar-thumb {
   background: var(--cielo);
   border-radius: 10px;
 }
 
-.lang-options::-webkit-scrollbar-thumb:hover {
+.lang-panel > .d-flex::-webkit-scrollbar-thumb:hover {
   background: var(--azul);
 }
 

@@ -1,122 +1,208 @@
 <?php
-// administrador/api/estudiantes/detalle_estudiante.php
+
+header('Content-Type: application/json; charset=utf-8');
+
+// Cargar dependencias
 require_once __DIR__ . '/../../config/db.php';
-require_once __DIR__ . '/../../../includes/auth.php';
+require_once __DIR__ . "/../../../includes/auth.php"; 
 
-header('Content-Type: application/json');
-
+// Inicializar la sesión usando tu función global
 iniciarSesion();
 
-if (!estaAutenticado() || usuarioRol() !== ROL_PROFESOR) {
+// VALIDACIÓN: Usamos la función nativa de auth.php
+$profesor_id = usuarioId(); 
+
+// Si no hay un ID de usuario válido o el rol no corresponde al de un profesor
+if (!$profesor_id || $_SESSION['rol'] !== 'profesor') {
     http_response_code(401);
-    echo json_encode(['success' => false, 'error' => 'No autorizado.']);
+    echo json_encode([
+        'success' => false, 
+        'error' => 'No autorizado. Sesión inválida o rol incorrecto.'
+    ]);
     exit;
 }
 
-$uid      = usuarioId();
-$alumnoId = isset($_GET['alumno_id']) ? (int)$_GET['alumno_id'] : 0;
-$cursoId  = isset($_GET['curso_id'])  ? (int)$_GET['curso_id']  : 0;
+// Obtener parámetros de la URL
+$alumno_id = isset($_GET['alumno_id']) ? (int)$_GET['alumno_id'] : 0;
+$curso_id  = isset($_GET['curso_id'])  ? (int)$_GET['curso_id']  : 0;
 
-if ($alumnoId <= 0 || $cursoId <= 0) {
-    echo json_encode(['success' => false, 'error' => 'Parámetros inválidos.']);
+// Validar parámetros
+if ($alumno_id <= 0 || $curso_id <= 0) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'error' => 'Parámetros inválidos']);
     exit;
 }
 
-// Verificar que el curso pertenece al profesor
-$stmtCheck = $conexion->prepare("SELECT id, titulo FROM cursos WHERE id = ? AND profesor_id = ?");
-$stmtCheck->bind_param("ii", $cursoId, $uid);
-$stmtCheck->execute();
-$curso = $stmtCheck->get_result()->fetch_assoc();
-$stmtCheck->close();
+// ────────────────────────────────────────────────────────
+// 1. Obtener datos del alumno
+// ────────────────────────────────────────────────────────
 
-if (!$curso) {
-    echo json_encode(['success' => false, 'error' => 'Curso no encontrado.']);
-    exit;
-}
-
-// Datos del alumno con progreso desde inscripciones
-// y también desde tabla `progreso` si existe un registro más actualizado
-$stmtAlumno = $conexion->prepare("
-    SELECT
-        u.id, u.nombre, u.correo, u.avatar,
-        i.completado,
-        GREATEST(i.progreso, COALESCE(p.progreso, 0)) AS progreso,
-        COUNT(DISTINCT l.id) AS total_lecciones
+$sqlAlumno = "
+    SELECT u.id, u.nombre, u.correo, u.avatar
     FROM usuarios u
-    INNER JOIN inscripciones i ON i.usuario_id = u.id AND i.curso_id = ?
-    LEFT  JOIN progreso p       ON p.usuario_id = u.id AND p.curso_id = ?
-    LEFT  JOIN modulos   m      ON m.curso_id  = ?
-    LEFT  JOIN lecciones l      ON l.modulo_id = m.id
     WHERE u.id = ?
-    GROUP BY u.id, i.completado, i.progreso, p.progreso
-");
-$stmtAlumno->bind_param("iiii", $cursoId, $cursoId, $cursoId, $alumnoId);
+    LIMIT 1
+";
+
+$stmtAlumno = $conexion->prepare($sqlAlumno);
+if (!$stmtAlumno) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => 'Error en preparación de consulta: ' . $conexion->error]);
+    exit;
+}
+
+$stmtAlumno->bind_param("i", $alumno_id);
 $stmtAlumno->execute();
-$alumno = $stmtAlumno->get_result()->fetch_assoc();
+$resultAlumno = $stmtAlumno->get_result();
+
+if ($resultAlumno->num_rows === 0) {
+    http_response_code(404);
+    echo json_encode(['success' => false, 'error' => 'Estudiante no encontrado']);
+    $stmtAlumno->close();
+    exit;
+}
+
+$alumno = $resultAlumno->fetch_assoc();
 $stmtAlumno->close();
 
-if (!$alumno) {
-    echo json_encode(['success' => false, 'error' => 'Estudiante no encontrado.']);
+// ────────────────────────────────────────────────────────
+// 2. Obtener datos de inscripción (progreso, estado, etc)
+// ────────────────────────────────────────────────────────
+
+$sqlInscripcion = "
+    SELECT 
+        i.fecha_inscripcion,
+        i.completado,
+        i.progreso,
+        COUNT(DISTINCT l.id) AS total_lecciones
+    FROM inscripciones i
+    LEFT JOIN cursos c ON c.id = i.curso_id
+    LEFT JOIN modulos m ON m.curso_id = c.id
+    LEFT JOIN lecciones l ON l.modulo_id = m.id
+    WHERE i.usuario_id = ? AND i.curso_id = ?
+    GROUP BY i.id
+    LIMIT 1
+";
+
+$stmtInscripcion = $conexion->prepare($sqlInscripcion);
+if (!$stmtInscripcion) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => 'Error en preparación de consulta']);
     exit;
 }
 
-// Módulos con sus lecciones
-$stmtModulos = $conexion->prepare("
-    SELECT m.id AS modulo_id, m.titulo AS modulo_titulo, m.orden AS modulo_orden,
-           l.id AS leccion_id, l.titulo AS leccion_titulo, l.tipo AS leccion_tipo, l.orden AS leccion_orden
+$stmtInscripcion->bind_param("ii", $alumno_id, $curso_id);
+$stmtInscripcion->execute();
+$resultInscripcion = $stmtInscripcion->get_result();
+
+$inscripcion = $resultInscripcion->num_rows > 0 
+    ? $resultInscripcion->fetch_assoc()
+    : ['completado' => 0, 'progreso' => 0, 'total_lecciones' => 0, 'fecha_inscripcion' => null];
+
+$stmtInscripcion->close();
+
+// ────────────────────────────────────────────────────────
+// 3. Obtener datos del curso y verificar permisos
+// ────────────────────────────────────────────────────────
+
+$sqlCurso = "
+    SELECT id, titulo, descripcion, profesor_id
+    FROM cursos
+    WHERE id = ?
+    LIMIT 1
+";
+
+$stmtCurso = $conexion->prepare($sqlCurso);
+if (!$stmtCurso) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => 'Error en preparación de consulta']);
+    exit;
+}
+
+$stmtCurso->bind_param("i", $curso_id);
+$stmtCurso->execute();
+$resultCurso = $stmtCurso->get_result();
+
+if ($resultCurso->num_rows === 0) {
+    http_response_code(404);
+    echo json_encode(['success' => false, 'error' => 'Curso no encontrado']);
+    $stmtCurso->close();
+    exit;
+}
+
+$curso = $resultCurso->fetch_assoc();
+$stmtCurso->close();
+
+// Verificar que el profesor es dueño del curso (usando $profesor_id corregido)
+if ((int)$curso['profesor_id'] !== (int)$profesor_id) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'error' => 'No tienes permiso para ver este curso']);
+    exit;
+}
+
+// ────────────────────────────────────────────────────────
+// 4. Obtener módulos y lecciones
+// ────────────────────────────────────────────────────────
+
+$sqlModulos = "
+    SELECT 
+        m.id,
+        m.titulo,
+        m.curso_id
     FROM modulos m
-    LEFT JOIN lecciones l ON l.modulo_id = m.id
     WHERE m.curso_id = ?
-    ORDER BY m.orden ASC, l.orden ASC
-");
-$stmtModulos->bind_param("i", $cursoId);
+    ORDER BY m.orden ASC
+";
+
+$stmtModulos = $conexion->prepare($sqlModulos);
+if (!$stmtModulos) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => 'Error en preparación de consulta']);
+    exit;
+}
+
+$stmtModulos->bind_param("i", $curso_id);
 $stmtModulos->execute();
-$rows = $stmtModulos->get_result()->fetch_all(MYSQLI_ASSOC);
+$resultModulos = $stmtModulos->get_result();
+$modulos = [];
+
+while ($modulo = $resultModulos->fetch_assoc()) {
+    // Obtener lecciones de este módulo
+    $sqlLecciones = "
+        SELECT id, titulo, tipo
+        FROM lecciones
+        WHERE modulo_id = ?
+        ORDER BY orden ASC
+    ";
+    
+    $stmtLecciones = $conexion->prepare($sqlLecciones);
+    if ($stmtLecciones) {
+        $modulo_id = $modulo['id'];
+        $stmtLecciones->bind_param("i", $modulo_id);
+        $stmtLecciones->execute();
+        $resultLecciones = $stmtLecciones->get_result();
+        
+        $modulo['lecciones'] = [];
+        while ($leccion = $resultLecciones->fetch_assoc()) {
+            $modulo['lecciones'][] = $leccion;
+        }
+        $stmtLecciones->close();
+    }
+    
+    $modulos[] = $modulo;
+}
 $stmtModulos->close();
 
-// Agrupar por módulo
-$modulosMap = [];
-foreach ($rows as $row) {
-    $mid = $row['modulo_id'];
-    if (!isset($modulosMap[$mid])) {
-        $modulosMap[$mid] = [
-            'titulo'    => $row['modulo_titulo'],
-            'lecciones' => [],
-        ];
-    }
-    if ($row['leccion_id']) {
-        $modulosMap[$mid]['lecciones'][] = [
-            'titulo' => $row['leccion_titulo'],
-            'tipo'   => $row['leccion_tipo'],
-        ];
-    }
-}
+// ────────────────────────────────────────────────────────
+// 5. Construir respuesta completa
+// ────────────────────────────────────────────────────────
 
-// Limpiar avatar: si es URL absoluta usar directo; si es ruta relativa verificar existencia
-$avatarAlumno = null;
-if (!empty($alumno['avatar'])) {
-    $av = $alumno['avatar'];
-    if (str_starts_with($av, 'http')) {
-        $avatarAlumno = $av;
-    } elseif (file_exists(__DIR__ . '/../../../' . ltrim($av, '/'))) {
-        $avatarAlumno = '/' . ltrim($av, '/');
-    }
-}
+$respuesta = [
+    'success'   => true,
+    'alumno'    => array_merge($alumno, $inscripcion),
+    'curso'     => $curso,
+    'modulos'   => $modulos,
+];
 
-echo json_encode([
-    'success' => true,
-    'alumno'  => [
-        'id'             => (int)$alumno['id'],
-        'nombre'         => $alumno['nombre'],
-        'correo'         => $alumno['correo'],
-        'avatar'         => $avatarAlumno,
-        'completado'     => (bool)$alumno['completado'],
-        'progreso'       => (int)$alumno['progreso'],
-        'total_lecciones'=> (int)$alumno['total_lecciones'],
-    ],
-    'curso'   => [
-        'id'     => (int)$curso['id'],
-        'titulo' => $curso['titulo'],
-    ],
-    'modulos' => array_values($modulosMap),
-]);
+echo json_encode($respuesta, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+exit;
