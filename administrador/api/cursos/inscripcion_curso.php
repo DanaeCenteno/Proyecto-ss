@@ -1,16 +1,17 @@
-
 <?php
-session_start();
-include "../config/db.php";
+require_once __DIR__ . '/../../../includes/auth.php';
+require_once __DIR__ . '/../../config/db.php';
+iniciarSesion();
+header('Content-Type: application/json; charset=utf-8');
 
-if (!isset($_SESSION["id"])) {
+if (!estaAutenticado()) {
     echo json_encode(["success" => false, "message" => "No autenticado"]);
     exit;
 }
 
 $data = json_decode(file_get_contents("php://input"), true);
 $cursoId = (int)($data['curso_id'] ?? 0);
-$usuarioId = $_SESSION["id"];
+$usuarioId = usuarioId();
 
 // Verificar que no este ya inscrito
 $stmt = $conexion->prepare("SELECT id FROM inscripciones WHERE usuario_id = ? AND curso_id = ?");

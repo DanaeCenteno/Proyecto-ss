@@ -1,10 +1,11 @@
 <?php
 // ACTUALIZAR — edita título, descripción, estado, etc.
-session_start();
-include "../../config/db.php";
+require_once __DIR__ . '/../../../includes/auth.php';
+require_once __DIR__ . '/../../config/db.php';
+iniciarSesion();
 header('Content-Type: application/json');
 
-if (!isset($_SESSION["id"])) {
+if (!estaAutenticado()) {
     echo json_encode(['success' => false, 'error' => 'No autorizado']);
     exit;
 }
@@ -16,7 +17,7 @@ $descripcion = trim($body['descripcion']     ?? '');
 $categoria   = trim($body['categoria']       ?? '');
 $estado      = trim($body['estado']          ?? 'borrador');
 $duracion    = (int)($body['duracion_total'] ?? 0);
-$idProfesor  = $_SESSION["id"];
+$idProfesor  = usuarioId();
 
 if (!$id || !$titulo) {
     echo json_encode(['success' => false, 'error' => 'Datos incompletos']);

@@ -1,10 +1,11 @@
 <?php
 // ACTUALIZAR — renombra un módulo
-session_start();
-include "../../config/db.php";
+require_once __DIR__ . '/../../../includes/auth.php';
+require_once __DIR__ . '/../../config/db.php';
+iniciarSesion();
 header('Content-Type: application/json');
 
-if (!isset($_SESSION["id"])) {
+if (!estaAutenticado()) {
     echo json_encode(['success' => false, 'error' => 'No autorizado']);
     exit;
 }
@@ -25,7 +26,7 @@ $stmt = $conexion->prepare("
     SET m.titulo = ?
     WHERE m.id = ? AND c.profesor_id = ?
 ");
-$idProfesor = $_SESSION["id"];
+$idProfesor = usuarioId();
 $stmt->bind_param("sii", $titulo, $id, $idProfesor);
 $stmt->execute();
 

@@ -1,10 +1,11 @@
 <?php
 // ACTUALIZAR — edita título, tipo, url, descripción de una lección
-session_start();
-include "../../config/db.php";
+require_once __DIR__ . '/../../../includes/auth.php';
+require_once __DIR__ . '/../../config/db.php';
+iniciarSesion();
 header('Content-Type: application/json');
 
-if (!isset($_SESSION["id"])) {
+if (!estaAutenticado()) {
     echo json_encode(['success' => false, 'error' => 'No autorizado']);
     exit;
 }
@@ -15,7 +16,7 @@ $titulo      = trim($body['titulo']       ?? '');
 $tipo        = trim($body['tipo']         ?? 'video');
 $url         = trim($body['url']          ?? '');
 $descripcion = trim($body['descripcion']  ?? '');
-$idProfesor  = $_SESSION["id"];
+$idProfesor  = usuarioId();
 
 if (!$id || !$titulo) {
     echo json_encode(['success' => false, 'error' => 'Datos incompletos']);
