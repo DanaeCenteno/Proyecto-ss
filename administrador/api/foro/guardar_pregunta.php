@@ -62,7 +62,7 @@ $stmt = $conexion->prepare($sql);
 
 if (!$stmt) responder(false, 'Error al preparar consulta: ' . $conexion->error, 500);
 
-// DESPUÉS
+
 $stmt->bind_param('iisss', $usuarioId, $cursoId, $titulo, $contenido, $lenguajesGuardar);
 if ($stmt->execute()) {
     $nuevaId = $stmt->insert_id;

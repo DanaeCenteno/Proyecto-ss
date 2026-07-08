@@ -4,9 +4,6 @@ ob_start();
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/../../../includes/auth.php';
 
-// ⚠️ TEMPORAL: fuerza que mysqli lance excepciones en lugar de tragarse errores
-mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-
 iniciarSesion();
 header('Content-Type: application/json; charset=utf-8');
 

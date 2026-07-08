@@ -1,12 +1,4 @@
 <?php
-/**
- * administrador/api/foro/eliminar_respuesta.php
- *
- * POST Parameters:
- *   - respuesta_id: ID de la respuesta a eliminar
- *
- * Response: JSON { ok: bool, msg: string }
- */
 
 ob_start();
 

@@ -56,9 +56,6 @@ if ($resU && !empty($resU['avatar'])) {
             <img src="../img/logoEduTecnia.png" alt="EduTecnia" height="50">
         </a>
         <ul class="nav align-items-center gap-1 mb-0">
-            <li class="nav-item">
-                <input type="search" id="courseSearch" placeholder="Buscar cursos...">
-            </li>
             <li><a href="index.php?uid=<?= $uid ?>" class="nav-link">Inicio</a></li>
             <li><a href="index.php?uid=<?= $uid ?>#cursos" class="nav-link">Cursos</a></li>
             <li><a href="foroEs.php?uid=<?= $uid ?>" class="nav-link active">Foro</a></li>

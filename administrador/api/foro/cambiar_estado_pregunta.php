@@ -1,16 +1,4 @@
 <?php
-/**
- * administrador/api/foro/cambiar_estado_pregunta.php
- *
- * Cambia el estado de una pregunta (abierta, cerrada, resuelta)
- *
- * POST Parameters:
- *   - pregunta_id: ID de la pregunta
- *   - estado: abierta | cerrada | resuelta
- *
- * Response: JSON
- *   { ok: bool, msg: string, estado?: string }
- */
 
 ob_start();
 

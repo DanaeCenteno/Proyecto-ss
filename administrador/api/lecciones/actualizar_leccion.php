@@ -1,5 +1,5 @@
 <?php
-// ACTUALIZAR — edita título, tipo, url, descripción de una lección
+
 require_once __DIR__ . '/../../../includes/auth.php';
 require_once __DIR__ . '/../../config/db.php';
 iniciarSesion();
@@ -23,7 +23,7 @@ if (!$id || !$titulo) {
     exit;
 }
 
-// ✅ Verifica que la lección pertenece a un curso del profesor
+
 $stmt = $conexion->prepare("
     UPDATE lecciones l
     INNER JOIN modulos  m ON l.modulo_id  = m.id

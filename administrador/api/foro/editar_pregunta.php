@@ -1,17 +1,4 @@
 <?php
-/**
- * administrador/api/foro/editar_pregunta.php
- *
- * Edita el título y estado de una pregunta
- *
- * POST Parameters:
- *   - pregunta_id: ID de la pregunta
- *   - titulo: Nuevo título (max 150 caracteres)
- *   - estado: abierta | cerrada | resuelta (opcional)
- *
- * Response: JSON
- *   { ok: bool, msg: string }
- */
 
 ob_start();
 

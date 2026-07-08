@@ -19,7 +19,7 @@ function responder(bool $ok, string $msg, int $code = 200, array $extra = []): v
 if ($conexion->connect_errno) responder(false, 'Error de BD.', 500);
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') responder(false, 'Método no permitido.', 405);
 
-// CORREGIDO: Ahora usa la función global para verificar si hay sesión real
+
 if (!estaAutenticado()) {
     responder(false, 'Debes iniciar sesión para votar.', 401);
 }

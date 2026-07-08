@@ -11,7 +11,7 @@ function resp(bool $ok, string $msg, array $extra = []): void {
     exit;
 }
 
-// ── Convierte valores tipo "40M", "1G" del php.ini a bytes ──
+
 function iniABytes(string $val): int {
     $val = trim($val);
     if ($val === '') return 0;
@@ -25,8 +25,7 @@ function iniABytes(string $val): int {
     return $num;
 }
 
-// ── Si el POST completo supera post_max_size, PHP vacía $_POST y $_FILES ──
-// ── antes de que el script corra, así que lo detectamos por CONTENT_LENGTH ──
+
 $postMaxBytes = iniABytes(ini_get('post_max_size'));
 $contentLength = (int)($_SERVER['CONTENT_LENGTH'] ?? 0);
 
@@ -59,15 +58,10 @@ if (empty($_FILES['archivo']) || $_FILES['archivo']['error'] !== UPLOAD_ERR_OK) 
 
 $cursoId  = (int)($_POST['curso_id'] ?? 0);
 $archivo  = $_FILES['archivo'];
-// $tamano   = $archivo['size'];
-// MAX_BYTES$ = 20 * 1024 * 1024; // 20 MB
 
-// if ($tamano > $MAX_BYTES) resp(false, 'El archivo supera los 20 MB permitidos.');
-
-// Validar extensión y MIME
 $ext = strtolower(pathinfo($archivo['name'], PATHINFO_EXTENSION));
 
-// Documentos ofimáticos: MIME estricto (bien estandarizado)
+
 $mimesOfimatica = [
     'pdf'  => ['application/pdf'],
     'doc'  => ['application/msword'],
@@ -78,12 +72,11 @@ $mimesOfimatica = [
     'xlsx' => ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
 ];
 
-// Código y texto: el MIME real varía mucho entre sistemas operativos,
-// así que aceptamos varias variantes conocidas por extensión.
+
 $mimesCodigo = [
     'js'   => ['text/javascript', 'application/javascript', 'text/plain'],
     'jsx'  => ['text/javascript', 'application/javascript', 'text/plain'],
-    'ts'   => ['text/plain', 'video/mp2t', 'application/x-typescript'], // algunos SO confunden .ts con video
+    'ts'   => ['text/plain', 'video/mp2t', 'application/x-typescript'],
     'tsx'  => ['text/plain'],
     'py'   => ['text/x-python', 'text/x-script.python', 'text/plain'],
     'java' => ['text/x-java', 'text/x-java-source', 'text/plain'],
@@ -106,12 +99,11 @@ if (!isset($mimes[$ext])) {
     resp(false, 'Formato no permitido: "' . $ext . '". Usa PDF, Word, PowerPoint, Excel, o un archivo de código/texto compatible.');
 }
 
-// Verificar MIME real con finfo
+
 $finfo    = new finfo(FILEINFO_MIME_TYPE);
 $mimeReal = $finfo->file($archivo['tmp_name']);
 
-// Para código/texto: si el MIME no está en la lista pero SÍ empieza con "text/",
-// lo aceptamos igual (cubre variantes que no anticipamos, sin abrir la puerta a binarios).
+
 $mimeAceptado = in_array($mimeReal, $mimes[$ext], true)
     || (isset($mimesCodigo[$ext]) && str_starts_with($mimeReal, 'text/'));
 
@@ -119,7 +111,7 @@ if (!$mimeAceptado) {
     resp(false, 'El contenido del archivo no coincide con su extensión (' . $ext . '). Verifica que el archivo no esté dañado.');
 }
 
-// Crear carpeta destino
+
 $dirBase = __DIR__ . '/../../../profesor/uploads/cursos/curso_' . $cursoId;
 if (!is_dir($dirBase)) {
     mkdir($dirBase, 0755, true);

@@ -2,7 +2,7 @@
 
 ob_start();
 
-require_once __DIR__ . '/../../config/db.php';   // usa la misma conexión que el resto de la app
+require_once __DIR__ . '/../../config/db.php';  
 require_once __DIR__ . '/../../../includes/auth.php';
 
 iniciarSesion();
@@ -45,7 +45,6 @@ if ($contenido === '' || strip_tags($contenido) === '') {
     responder(false, 'La respuesta no puede estar vacía.', 422);
 }
 
-// ... (A partir de aquí continúa tu código para verificar si la pregunta existe e insertar)
 // Verificar que la pregunta exista y no esté cerrada
 $stmtChk = $conexion->prepare("SELECT estado FROM foro_preguntas WHERE id = ?");
 $stmtChk->bind_param("i", $preguntaId);

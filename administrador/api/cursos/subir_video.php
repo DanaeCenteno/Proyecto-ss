@@ -11,7 +11,6 @@ function resp(bool $ok, string $msg, array $extra = []): void {
     exit;
 }
 
-// ── Convierte valores tipo "40M", "1G" del php.ini a bytes ──
 function iniABytes(string $val): int {
     $val = trim($val);
     if ($val === '') return 0;
@@ -25,8 +24,6 @@ function iniABytes(string $val): int {
     return $num;
 }
 
-// ── Si el POST completo supera post_max_size, PHP vacía $_POST y $_FILES ──
-// ── antes de que el script corra, así que lo detectamos por CONTENT_LENGTH ──
 $postMaxBytes = iniABytes(ini_get('post_max_size'));
 $contentLength = (int)($_SERVER['CONTENT_LENGTH'] ?? 0);
 
@@ -68,7 +65,7 @@ if (!in_array($ext, $extPermitidas)) {
     resp(false, 'Formato no permitido: "' . $ext . '". Usa uno de estos: MP4, MKV, AVI, MOV, WEBM o MP3.');
 }
 
-// Validar MIME con finfo (permisivo: algunos SO reportan tipos genéricos para mkv/avi)
+
 $finfo    = new finfo(FILEINFO_MIME_TYPE);
 $mimeReal = $finfo->file($archivo['tmp_name']);
 

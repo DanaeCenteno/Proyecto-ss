@@ -1,12 +1,4 @@
 <?php
-/**
- * administrador/api/foro/eliminar_pregunta.php
- *
- * POST Parameters:
- *   - pregunta_id: ID de la pregunta a eliminar
- *
- * Response: JSON { ok: bool, msg: string }
- */
 
 ob_start();
 

@@ -1,5 +1,5 @@
 <?php
-// ACTUALIZAR — renombra un módulo
+
 require_once __DIR__ . '/../../../includes/auth.php';
 require_once __DIR__ . '/../../config/db.php';
 iniciarSesion();
@@ -19,7 +19,7 @@ if (!$id || !$titulo) {
     exit;
 }
 
-// ✅ Verifica que el módulo pertenece a un curso del profesor
+
 $stmt = $conexion->prepare("
     UPDATE modulos m
     INNER JOIN cursos c ON m.curso_id = c.id

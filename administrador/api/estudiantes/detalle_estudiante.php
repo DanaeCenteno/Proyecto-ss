@@ -2,14 +2,14 @@
 
 header('Content-Type: application/json; charset=utf-8');
 
-// Cargar dependencias
+
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . "/../../../includes/auth.php"; 
 
-// Inicializar la sesión usando tu función global
+
 iniciarSesion();
 
-// VALIDACIÓN: Usamos la función nativa de auth.php
+
 $profesor_id = usuarioId(); 
 
 // Si no hay un ID de usuario válido o el rol no corresponde al de un profesor
@@ -22,11 +22,11 @@ if (!$profesor_id || $_SESSION['rol'] !== 'profesor') {
     exit;
 }
 
-// Obtener parámetros de la URL
+
 $alumno_id = isset($_GET['alumno_id']) ? (int)$_GET['alumno_id'] : 0;
 $curso_id  = isset($_GET['curso_id'])  ? (int)$_GET['curso_id']  : 0;
 
-// Validar parámetros
+
 if ($alumno_id <= 0 || $curso_id <= 0) {
     http_response_code(400);
     echo json_encode(['success' => false, 'error' => 'Parámetros inválidos']);

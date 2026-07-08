@@ -1,6 +1,6 @@
 <?php
 
-// 1. Enviar cabecera de inmediato para asegurar formato JSON
+
 header('Content-Type: application/json; charset=utf-8');
 ob_start();
 
@@ -12,7 +12,7 @@ iniciarSesion();
 
 function responder(bool $ok, string $msg, int $code = 200, array $extra = []): void {
     if (ob_get_length()) {
-        ob_end_clean(); // Limpia cualquier eco o warning stray
+        ob_end_clean(); 
     }
     http_response_code($code);
     echo json_encode(array_merge(['ok' => $ok, 'msg' => $msg], $extra));
