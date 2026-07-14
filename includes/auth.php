@@ -43,7 +43,9 @@ function inicialesAvatar(string $nombre): string {
 function redirigirSegunRol(): void {
     $id  = usuarioId();
     $rol = usuarioRol();
-    if ($rol === ROL_PROFESOR) {
+    if ($rol === 'admin') {
+        header("Location: " . BASE_URL . "/admin/panelAdmin.php");
+    } elseif ($rol === ROL_PROFESOR) {
         header("Location: " . BASE_URL . "/profesor/dashboard.php?uid=$id");
     } else {
         header("Location: " . BASE_URL . "/estudiante/index.php?uid=$id");
@@ -93,4 +95,3 @@ function validarCorreoInstitucional(string $correo): bool
     // 3. Validar que termine exactamente en @cua.uam.mx
     return (bool)preg_match('/^[a-zA-Z0-9._%+-]+@cua\.uam\.mx$/', $correo);
 }
-
