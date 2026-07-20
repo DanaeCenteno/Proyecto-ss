@@ -970,7 +970,7 @@ function previoActivarLeccion(lecId, modulo, lec, lIndex) {
                         <i class="bi bi-music-note-beamed" style="font-size:3rem;color:#a78bfa;display:block;margin-bottom:1rem;"></i>
                         <p style="color:#e2e8f0;font-size:13px;margin-bottom:1rem;">${escapeHtml(lec.url.split('/').pop())}</p>
                         <audio controls style="width:100%;border-radius:8px;">
-                            <source src="${escapeHtml('/pp/profesor/' + lec.url)}" type="${mimeType}">
+                            <source src="${escapeHtml(BASE_URL + '/profesor/' + lec.url)}" type="${mimeType}">
                             Tu navegador no soporta reproducción de audio.
                         </audio>
                     </div>`;
@@ -978,7 +978,7 @@ function previoActivarLeccion(lecId, modulo, lec, lIndex) {
                     html += `
                     <div style="background:#000;border-radius:12px;overflow:hidden;margin-bottom:12px;">
                         <video controls style="width:100%;max-height:420px;display:block;">
-                            <source src="${escapeHtml('/pp/profesor/' + lec.url)}" type="${mimeType}">
+                            <source src="${escapeHtml(BASE_URL + '/profesor/' + lec.url)}" type="${mimeType}">
                             Tu navegador no soporta reproducción de video.
                         </video>
                     </div>`;
@@ -1241,7 +1241,7 @@ async function subirVideo(file) {
             if (bar) bar.style.width = prog + '%';
         }, 400);
 
-        const res = await fetch('/pp/administrador/api/cursos/subir_video.php', {
+        const res = await fetch(BASE_URL + '/administrador/api/cursos/subir_video.php', {
             method: 'POST', credentials: 'include', body: formData
         });
         clearInterval(timer);
@@ -1385,7 +1385,7 @@ async function subirDocumento(file) {
             if (bar) bar.style.width = prog + '%';
         }, 300);
 
-        const res = await fetch('/pp/administrador/api/cursos/subir_documento.php', {
+        const res = await fetch(BASE_URL + '/administrador/api/cursos/subir_documento.php', {
             method: 'POST', credentials: 'include', body: formData
         });
         clearInterval(timer);

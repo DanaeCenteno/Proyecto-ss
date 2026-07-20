@@ -116,7 +116,7 @@ $config = array_merge([
             <a class="nav-link-item" data-tab="config" onclick="cambiarTab('config')">
                 <i class="bi bi-gear-fill"></i> Configuración
             </a>
-            <a class="nav-link-item" href="../../logout.php">
+            <a class="nav-link-item" href="../logout.php">
                 <i class="bi bi-box-arrow-left"></i> Cerrar sesión
             </a>
         </nav>
@@ -307,7 +307,7 @@ $config = array_merge([
                             <div class="export-grid">
                                 <button class="export-btn" onclick="exportar('inscripciones')">
                                     <i class="bi bi-file-earmark-spreadsheet-fill"></i>
-                                    <span>Inscripciones</span>
+                                    <span>Inscripciones a cursos</span>
                                     <small>CSV</small>
                                 </button>
                                 <button class="export-btn" onclick="exportar('progreso')">

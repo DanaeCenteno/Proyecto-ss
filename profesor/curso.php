@@ -345,20 +345,20 @@ $categorias = [
                                     </label>
                                     <div class="duracion-input">
                                         <button type="button" class="duracion-btn"
-                                            onclick="cambiarDuracion(-5)">
+                                            onclick="cambiarDuracion(-1)">
                                             <i class="bi bi-dash"></i>
                                         </button>
                       
                                         <input type="number" name="duracion_total" id="duracionInput"
                                             class="form-control text-center fw-bold"
                                             value="<?= $valDuracion ?>"
-                                            min="0" max="9999"
+                                            min="0" max="13"
                                             style="width:90px; font-size:18px;">
                                         <button type="button" class="duracion-btn"
-                                            onclick="cambiarDuracion(5)">
+                                            onclick="cambiarDuracion(1)">
                                             <i class="bi bi-plus"></i>
                                         </button>
-                                        <span class="text-muted" style="font-size:13px;">min</span>
+                                        <span class="text-muted" style="font-size:13px;">Semanas</span>
                                     </div>
                                 </div>
                             </div>

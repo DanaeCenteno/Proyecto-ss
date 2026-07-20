@@ -116,6 +116,17 @@ function embedUrl($url) {
         return 'https://www.youtube.com/embed/' . substr(strrchr($url, '/'), 1);
     return $url;
 }
+
+// Arma la URL absoluta correcta para archivos subidos (video/documento).
+// Los archivos siempre se guardan físicamente bajo profesor/uploads/...,
+// sin importar si quien los ve es un profesor o un estudiante, así que
+// hay que anclarlos a BASE_URL + /profesor/ y no a una ruta relativa
+// (que se resolvería contra la carpeta actual, ej. /estudiante/).
+function urlArchivo($url) {
+    if (!$url) return '';
+    if (preg_match('#^https?://#i', $url)) return $url; // ya es una URL externa (YouTube, etc.)
+    return rtrim(BASE_URL, '/') . '/profesor/' . ltrim($url, '/');
+}
 function tipoIcon($tipo) {
     return match($tipo) {
         'video'     => 'bi-play-circle-fill',
@@ -335,11 +346,20 @@ function tipoLabel($tipo) {
 
                 <!-- Contenido según tipo -->
                 <?php if ($leccionActiva['tipo'] === 'video'): ?>
+                <?php
+                    $urlVideo   = $leccionActiva['url'] ?? '';
+                    $esExterno  = preg_match('#^https?://#i', $urlVideo);
+                    $esYoutube  = $esExterno && (str_contains($urlVideo, 'youtube.com') || str_contains($urlVideo, 'youtu.be'));
+                ?>
                 <div class="video-wrap">
-                    <?php if (!empty($leccionActiva['url'])): ?>
-                    <iframe src="<?= htmlspecialchars(embedUrl($leccionActiva['url'])) ?>"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen></iframe>
+                    <?php if (!empty($urlVideo)): ?>
+                        <?php if ($esYoutube || $esExterno): ?>
+                        <iframe src="<?= htmlspecialchars(embedUrl($urlVideo)) ?>"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen></iframe>
+                        <?php else: ?>
+                        <video controls style="width:100%;height:100%;background:#000;" src="<?= htmlspecialchars(urlArchivo($urlVideo)) ?>"></video>
+                        <?php endif; ?>
                     <?php else: ?>
                     <div class="video-placeholder">
                         <i class="bi bi-play-circle"></i>
@@ -355,24 +375,16 @@ function tipoLabel($tipo) {
 
                 <?php elseif ($leccionActiva['tipo'] === 'documento'): ?>
                 <?php
-                    $urlDoc = $leccionActiva['url'] ?? '';
-                    $ext    = strtolower(pathinfo(parse_url($urlDoc, PHP_URL_PATH), PATHINFO_EXTENSION));
+                    $urlOriginal = $leccionActiva['url'] ?? '';
+                    $ext         = strtolower(pathinfo(parse_url($urlOriginal, PHP_URL_PATH), PATHINFO_EXTENSION));
 
-            
-                    $appRoot = '/pp';
+                    // urlArchivo() ya arma la ruta absoluta correcta (BASE_URL + /profesor/...)
+                    // y respeta las URLs externas (http/https) tal cual.
+                    $urlDoc = urlArchivo($urlOriginal);
 
-            
-                    if ($urlDoc && !preg_match('#^https?://#i', $urlDoc)) {
-                        $rutaRel = ltrim($urlDoc, '/');                 
-                        $urlDoc  = $appRoot . '/profesor/' . $rutaRel;  
-                    }
-
-                    // URL absoluta completa (para el visor de Office)
+                    // $urlDoc ya es una URL absoluta (BASE_URL incluye http://host),
+                    // así que sirve igual para el visor de Office.
                     $urlAbs = $urlDoc;
-                    if (!preg_match('#^https?://#i', $urlDoc)) {
-                        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-                        $urlAbs = $scheme . '://' . $_SERVER['HTTP_HOST'] . $urlDoc;
-                    }
 
                     $esPdf    = $ext === 'pdf';
                     $esOffice = in_array($ext, ['ppt', 'pptx', 'doc', 'docx', 'xls', 'xlsx']);
